@@ -16,7 +16,7 @@ module.exports = {
     project: ["./tsconfig.json", "./tsconfig.node.json"],
     tsconfigRootDir: __dirname,
   },
-  ignorePatterns: ["dist", ".eslintrc.cjs"],
+  ignorePatterns: ["dist", ".eslintrc.cjs", "vite.config.ts"],
   parser: "@typescript-eslint/parser",
   plugins: ["react-refresh"],
   rules: {
@@ -24,5 +24,10 @@ module.exports = {
       "warn",
       { allowConstantExport: true },
     ],
+  },
+  settings: {
+    react: {
+      version: "detect",
+    },
   },
 };
