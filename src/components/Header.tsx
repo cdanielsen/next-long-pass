@@ -1,7 +1,14 @@
 import "./Header.css";
 
 const Header = () => {
-  return <header className="header__title">You Need A Pass Phrase</header>;
+  const titleWords = ["You", "Need", "A", "Pass", "Phrase"];
+  return (
+    <header className="header__title">
+      {titleWords.map((word) => (
+        <div key={word}>{word}</div>
+      ))}
+    </header>
+  );
 };
 
 export default Header;
