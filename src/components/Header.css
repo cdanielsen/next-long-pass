@@ -6,20 +6,25 @@
   line-height: 125%;
 }
 
-@media (min-width: 1px) and (max-width: 400px) {
+/* Biggish */
+@media screen and (min-width: 801px) and (max-width: 1200px) {
   .header__title {
-    font-size: 3rem;
+    font-size: 8rem;
   }
 }
 
-@media (min-width: 401px) and (max-width: 800px) {
+/* Med */
+@media screen and (min-width: 401px) and (max-width: 800px),
+  (max-height: 1000px) {
   .header__title {
     font-size: 5rem;
   }
 }
 
-@media (min-width: 801px) and (max-width: 1200px) {
+/* Small */
+@media screen and ((min-width: 1px) and (max-width: 400px)),
+  (max-height: 500px) {
   .header__title {
-    font-size: 8rem;
+    font-size: 3rem;
   }
 }
