@@ -5,3 +5,13 @@
   align-items: flex-end;
   margin-left: 24px;
 }
+
+#Content__generate-passphrase-button {
+  width: 256px;
+  margin: 8px;
+}
+
+#Content__generate-description-button {
+  width: 256px;
+  margin: 8px;
+}
