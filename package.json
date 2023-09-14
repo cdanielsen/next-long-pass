@@ -6,8 +6,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "client:dev": "vite",
+    "client:build": "tsc && vite build",
+    "netlify": "netlify",
+    "dev": "netlify dev",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier . --write --ignore-unknown",
     "preview": "vite preview",
@@ -24,6 +26,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fontsource/alfa-slab-one": "^5.0.12",
+    "@netlify/functions": "^2.0.2",
     "framer-motion": "^10.16.4",
     "random-words": "^2.0.0",
     "react": "^18.2.0",
@@ -42,6 +45,7 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.0",
+    "netlify-cli": "^16.3.2",
     "prettier": "^3.0.2",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"

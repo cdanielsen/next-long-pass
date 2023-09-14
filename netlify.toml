@@ -1,0 +1,15 @@
+[dev]
+  command = "npm run client:dev"
+  publish = "dist"
+
+[build]
+  command = "npm run client:build"
+  publish = "dist"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Serve requests to the following route to a netlify fn
+[[redirects]]
+  from = "/api/passphrase"
+  to = "/.netlify/functions/openai"
