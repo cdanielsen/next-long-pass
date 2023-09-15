@@ -2,6 +2,14 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-end;
+  align-items: flex-start;
   margin-left: 24px;
+}
+
+#Content__generate-passphrase-button {
+  width: 256px;
+}
+
+#Content__generate-description-button {
+  width: 256px;
 }

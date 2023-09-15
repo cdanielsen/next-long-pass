@@ -1,0 +1,16 @@
+[dev]
+  command = "npm run client:dev"
+  publish = "dist"
+
+[build]
+  command = "npm run client:build"
+  publish = "dist"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Map requests from /api/* to eponymously named fns with no redirect
+[[redirects]]
+  from ="/api/*"
+  to ="/.netlify/functions/:splat"
+  status = 200
