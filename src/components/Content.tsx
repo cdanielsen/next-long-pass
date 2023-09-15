@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Button } from "@chakra-ui/react";
+import { Button, ButtonGroup } from "@chakra-ui/react";
 import { generate } from "random-words";
 import Passphrase from "./Passphrase";
+import Description from "./Description";
 import "./Content.css";
 import { fetchPassphraseDescription } from "../clients/openai";
 
@@ -14,13 +15,13 @@ const Content = () => {
   );
 
   const updatePassphrase = () => {
-    const nextWords = generate({
+    const nextPassphrase = generate({
       minLength: 3,
       maxLength: 5,
       exactly: 4,
       join: " ",
     });
-    setCurrentPassphrase(nextWords);
+    setCurrentPassphrase(nextPassphrase);
   };
 
   // Rather convulted construction to satisfy TS wanting
@@ -32,31 +33,35 @@ const Content = () => {
         setCurrentDescription(message);
       } catch (e) {
         console.error(e);
+        setCurrentDescription("An error occurred: please try again later");
       }
     })();
   };
 
   return (
     <main id="Content">
-      <Passphrase passPhrase={currentPassphrase} />
-      <Button
-        colorScheme="red"
-        id="Content__generate-passphrase-button"
-        onClick={updatePassphrase}
-      >
-        Make me one
-      </Button>
       {currentPassphrase && (
-        <Button
-          colorScheme="blue"
-          id="Content__generate-description-button"
-          onClick={generatePassphraseDescription(currentPassphrase)}
-        >
-          Generate AI description
-        </Button>
+        <Passphrase passphrase={`"${currentPassphrase}"`} />
       )}
-      {/* TODO: Shouldn't reuse this component */}
-      {currentDescription && <Passphrase passPhrase={currentDescription} />}
+      {currentDescription && <Description description={currentDescription} />}
+      <ButtonGroup>
+        <Button
+          colorScheme="red"
+          id="Content__generate-passphrase-button"
+          onClick={updatePassphrase}
+        >
+          Make me one
+        </Button>
+        {currentPassphrase && (
+          <Button
+            colorScheme="blue"
+            id="Content__generate-description-button"
+            onClick={generatePassphraseDescription(currentPassphrase)}
+          >
+            Generate AI description
+          </Button>
+        )}
+      </ButtonGroup>
     </main>
   );
 };

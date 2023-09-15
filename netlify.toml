@@ -9,7 +9,8 @@
 [functions]
   node_bundler = "esbuild"
 
-# Serve requests to the following route to a netlify fn
+# Map requests from /api/* to eponymously named fns with no redirect
 [[redirects]]
-  from = "/api/passphrase"
-  to = "/.netlify/functions/openai"
+  from ="/api/*"
+  to ="/.netlify/functions/:splat"
+  status = 200

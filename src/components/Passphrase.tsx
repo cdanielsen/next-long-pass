@@ -1,13 +1,13 @@
 import "./Passphrase.css";
 
 interface PassphraseProps {
-  passPhrase: string | null;
+  passphrase: string;
 }
 
-const Passphrase = ({ passPhrase }: PassphraseProps) => {
+const Passphrase = ({ passphrase }: PassphraseProps) => {
   return (
     <section id="Passphrase">
-      {passPhrase ? <code>{`"${passPhrase}"`}</code> : null}
+      <code>{passphrase}</code>
     </section>
   );
 };
