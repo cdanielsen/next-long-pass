@@ -1,5 +1,5 @@
+import { Box } from "@chakra-ui/react";
 import Typewriter from "typewriter-effect";
-import "./Description.css";
 
 interface DescriptionProps {
   description: string;
@@ -7,17 +7,18 @@ interface DescriptionProps {
 
 const Passphrase = ({ description }: DescriptionProps) => {
   return (
-    <section id="Description">
+    <Box as="section" margin="1rem 0" fontSize={[".75rem", "1.5rem"]}>
       <code>
         <Typewriter
           options={{
             strings: description,
             autoStart: true,
             delay: 35,
+            cursor: "",
           }}
         />
       </code>
-    </section>
+    </Box>
   );
 };
 

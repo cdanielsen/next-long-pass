@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Button, ButtonGroup } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex } from "@chakra-ui/react";
 import { generate } from "random-words";
 import Passphrase from "./Passphrase";
 import Description from "./Description";
-import "./Content.css";
 import { fetchPassphraseDescription } from "../clients/openai";
 
 const Content = () => {
@@ -39,30 +38,32 @@ const Content = () => {
   };
 
   return (
-    <main id="Content">
-      {currentPassphrase && (
-        <Passphrase passphrase={`"${currentPassphrase}"`} />
-      )}
+    <Flex as="main" direction="column" justify="center">
+      {currentPassphrase && <Passphrase passphrase={currentPassphrase} />}
       {currentDescription && <Description description={currentDescription} />}
-      <ButtonGroup>
+      <ButtonGroup
+        marginTop="2rem"
+        orientation="vertical"
+        alignItems={"flex-start"}
+      >
         <Button
           colorScheme="red"
-          id="Content__generate-passphrase-button"
           onClick={updatePassphrase}
+          size={["xs", "sm", "md"]}
         >
           Make me one
         </Button>
         {currentPassphrase && (
           <Button
             colorScheme="blue"
-            id="Content__generate-description-button"
+            size={["xs", "sm", "md"]}
             onClick={generatePassphraseDescription(currentPassphrase)}
           >
             Generate AI description
           </Button>
         )}
       </ButtonGroup>
-    </main>
+    </Flex>
   );
 };
 

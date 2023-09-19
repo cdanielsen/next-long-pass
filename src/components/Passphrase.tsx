@@ -24,7 +24,7 @@ const Passphrase = ({ passphrase }: PassphraseProps) => {
       justify="space-between"
       align="center"
       width="100%"
-      fontSize={"1.5rem"}
+      fontSize={["1rem", "2rem"]}
     >
       <Typewriter
         options={{
@@ -40,6 +40,7 @@ const Passphrase = ({ passphrase }: PassphraseProps) => {
         aria-label="Copy passphrase"
         icon={<CopyIcon />}
         onClick={copyTextToClipboard(passphrase)}
+        marginLeft="1rem"
       />
     </Flex>
   );

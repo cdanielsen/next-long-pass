@@ -1,13 +1,13 @@
+import { Flex } from "@chakra-ui/react";
 import Header from "./Header";
-import "./App.css";
 import Content from "./Content";
 
 function App() {
   return (
-    <div id="App__container">
+    <Flex height="100vh">
       <Header />
       <Content />
-    </div>
+    </Flex>
   );
 }
 
