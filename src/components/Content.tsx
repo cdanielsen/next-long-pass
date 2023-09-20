@@ -1,15 +1,14 @@
 import { useState } from "react";
-import { Button, ButtonGroup, Flex } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, Icon, Stack } from "@chakra-ui/react";
+import { GiRobotAntennas, GiHouseKeys } from "react-icons/gi";
 import { generate } from "random-words";
 import Passphrase from "./Passphrase";
 import Description from "./Description";
-import { fetchPassphraseDescription } from "../clients/openai";
+import { useDescription } from "../clients/openai";
+import { IconType } from "react-icons";
 
 const Content = () => {
   const [currentPassphrase, setCurrentPassphrase] = useState<string | null>(
-    null,
-  );
-  const [currentDescription, setCurrentDescription] = useState<string | null>(
     null,
   );
 
@@ -23,24 +22,26 @@ const Content = () => {
     setCurrentPassphrase(nextPassphrase);
   };
 
-  // Rather convulted construction to satisfy TS wanting
-  // a void returning function for a click handler
-  const generatePassphraseDescription = (passphrase: string) => () => {
-    void (async () => {
-      try {
-        const { message } = await fetchPassphraseDescription(passphrase);
-        setCurrentDescription(message);
-      } catch (e) {
-        console.error(e);
-        setCurrentDescription("An error occurred: please try again later");
-      }
-    })();
-  };
+  const { description, isLoading, isError, refetch } =
+    useDescription(currentPassphrase);
 
   return (
     <Flex as="main" direction="column" justify="center">
-      {currentPassphrase && <Passphrase passphrase={currentPassphrase} />}
-      {currentDescription && <Description description={currentDescription} />}
+      {currentPassphrase && (
+        <Stack direction="row" align="center">
+          <Icon boxSize={[6, 12]} as={GiHouseKeys as IconType} />
+          <Passphrase passphrase={currentPassphrase} />
+        </Stack>
+      )}
+      {isError && (
+        <Description description={"An error occured. Please try again later"} />
+      )}
+      {!isError && description && (
+        <Stack direction="row" align="center">
+          <Icon boxSize={[6, 12]} as={GiRobotAntennas as IconType} />
+          <Description description={description} />
+        </Stack>
+      )}
       <ButtonGroup
         marginTop="2rem"
         orientation="vertical"
@@ -56,10 +57,11 @@ const Content = () => {
         {currentPassphrase && (
           <Button
             colorScheme="blue"
+            isLoading={isLoading}
             size={["xs", "sm", "md"]}
-            onClick={generatePassphraseDescription(currentPassphrase)}
+            onClick={refetch}
           >
-            Generate AI description
+            Regenerate AI mnemonic
           </Button>
         )}
       </ButtonGroup>
