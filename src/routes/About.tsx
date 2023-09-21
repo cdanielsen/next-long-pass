@@ -4,7 +4,14 @@ const About = () => {
   return (
     <Flex direction="column" justify="center" align="center" height="100%">
       <Text fontSize="lg" marginBottom="1rem">
-        Inspired by xkcd
+        Inspired by{" "}
+        <Link
+          href="https://xkcd.com/936/"
+          color="blue.500"
+          _hover={{ textDecoration: "none" }}
+        >
+          xkcd
+        </Link>
       </Text>
       <Link href="https://xkcd.com/936/">
         <Box boxSize={["xs", "sm", "md", "lg"]}>
