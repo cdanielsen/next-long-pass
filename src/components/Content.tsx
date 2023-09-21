@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Button, ButtonGroup, Flex, Icon, IconButton } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, Icon } from "@chakra-ui/react";
 import { generate } from "random-words";
 import { IconType } from "react-icons";
 import { GiRobotAntennas, GiHouseKeys } from "react-icons/gi";
-import { PiCopySimpleDuotone as CopyIcon } from "react-icons/pi";
 
 import Passphrase from "./Passphrase";
 import Description from "./Description";
 import { useDescription } from "../clients/openai";
+import CopyButton from "./CopyButton";
 
 const Content = () => {
   const [currentPassphrase, setCurrentPassphrase] = useState<string | null>(
@@ -22,16 +22,6 @@ const Content = () => {
       join: " ",
     });
     setCurrentPassphrase(nextPassphrase);
-  };
-
-  const copyTextToClipboard = (passphrase: string) => () => {
-    void (async () => {
-      try {
-        await navigator.clipboard.writeText(passphrase);
-      } catch (e) {
-        console.error(e);
-      }
-    })();
   };
 
   const { description, isLoading, isError, refetch } =
@@ -54,13 +44,9 @@ const Content = () => {
             width="100%"
           >
             <Passphrase passphrase={currentPassphrase} />
-            <IconButton
-              variant="ghost"
-              colorScheme="blue"
-              aria-label="Copy passphrase"
-              icon={<CopyIcon />}
-              onClick={copyTextToClipboard(currentPassphrase)}
-              marginLeft="1rem"
+            <CopyButton
+              textToCopy={currentPassphrase}
+              ariaLabel="Copy passphrase"
             />
           </Flex>
         </Flex>
@@ -82,14 +68,7 @@ const Content = () => {
             width="100%"
           >
             <Description description={description} />
-            <IconButton
-              variant="ghost"
-              colorScheme="blue"
-              aria-label="Copy passphrase"
-              icon={<CopyIcon />}
-              onClick={copyTextToClipboard(description)}
-              marginLeft="1rem"
-            />
+            <CopyButton textToCopy={description} ariaLabel="Copy description" />
           </Flex>
         </Flex>
       )}
