@@ -103,7 +103,7 @@ const Content = () => {
           onClick={updatePassphrase}
           size={["xs", "sm", "md"]}
         >
-          Make me one
+          {`Make me ${!currentPassphrase ? "one" : "another"}`}
         </Button>
         {currentPassphrase && (
           <Button
