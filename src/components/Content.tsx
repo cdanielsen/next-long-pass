@@ -96,12 +96,14 @@ const Content = () => {
       <ButtonGroup
         marginTop="2rem"
         orientation="vertical"
-        alignItems={"flex-start"}
+        alignItems="flex-start"
+        width="fit-content"
       >
         <Button
           colorScheme="red"
           onClick={updatePassphrase}
           size={["xs", "sm", "md"]}
+          width="100%"
         >
           {`Make me ${!currentPassphrase ? "one" : "another"}`}
         </Button>
