@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { Button, ButtonGroup, Flex, Icon } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Button,
+  ButtonGroup,
+  Flex,
+  Icon,
+} from "@chakra-ui/react";
 import { generate } from "random-words";
 import { IconType } from "react-icons";
 import { GiRobotAntennas, GiHouseKeys } from "react-icons/gi";
@@ -55,7 +64,11 @@ const Content = () => {
         </Flex>
       )}
       {isError && (
-        <TypedPhrase phrase={"An error occured. Please try again later"} />
+        <Alert status="error" margin={"1rem 0"}>
+          <AlertIcon />
+          <AlertTitle>Error fetching description.</AlertTitle>
+          <AlertDescription>Please try again later</AlertDescription>
+        </Alert>
       )}
       {!isError && description && (
         <Flex direction="row" align="center">
