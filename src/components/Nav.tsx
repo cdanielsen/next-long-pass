@@ -5,7 +5,7 @@ const Nav = () => {
   return (
     <nav id="Navbar">
       <Flex justify="flex-end" marginTop="1rem">
-        <HStack as="ul" spacing="4rem" listStyleType="none">
+        <HStack as="ul" spacing="2rem" marginRight="1rem" listStyleType="none">
           <Box as="li">
             <Link to="/">/</Link>
           </Box>
