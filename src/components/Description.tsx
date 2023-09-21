@@ -7,7 +7,12 @@ interface DescriptionProps {
 
 const Passphrase = ({ description }: DescriptionProps) => {
   return (
-    <Box as="section" margin="1rem 0" fontSize={[".75rem", "1.5rem"]}>
+    <Box
+      as="section"
+      margin="1rem 0"
+      fontSize={[".75rem", "1.5rem"]}
+      maxWidth="30rem"
+    >
       <code>
         <Typewriter
           options={{
