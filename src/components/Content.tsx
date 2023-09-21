@@ -4,8 +4,7 @@ import { generate } from "random-words";
 import { IconType } from "react-icons";
 import { GiRobotAntennas, GiHouseKeys } from "react-icons/gi";
 
-import Passphrase from "./Passphrase";
-import Description from "./Description";
+import TypedPhrase from "./TypedPhrase";
 import { useDescription } from "../clients/openai";
 import CopyButton from "./CopyButton";
 
@@ -28,7 +27,12 @@ const Content = () => {
     useDescription(currentPassphrase);
 
   return (
-    <Flex as="main" direction="column" justify="center" minWidth="20rem">
+    <Flex
+      as="main"
+      direction="column"
+      justify="center"
+      minWidth={[100, 200, 400, 600]}
+    >
       {currentPassphrase && (
         <Flex direction="row" align="center">
           <Icon
@@ -39,11 +43,10 @@ const Content = () => {
           <Flex
             direction="row"
             justify="space-between"
-            fontSize={["1rem", "2rem"]}
             align="center"
             width="100%"
           >
-            <Passphrase passphrase={currentPassphrase} />
+            <TypedPhrase phrase={currentPassphrase} />
             <CopyButton
               textToCopy={currentPassphrase}
               ariaLabel="Copy passphrase"
@@ -52,7 +55,7 @@ const Content = () => {
         </Flex>
       )}
       {isError && (
-        <Description description={"An error occured. Please try again later"} />
+        <TypedPhrase phrase={"An error occured. Please try again later"} />
       )}
       {!isError && description && (
         <Flex direction="row" align="center">
@@ -67,7 +70,12 @@ const Content = () => {
             align="center"
             width="100%"
           >
-            <Description description={description} />
+            <TypedPhrase
+              phrase={description}
+              containerOptions={{
+                fontFamily: "SFMono-Regular,Menlo,Monaco,Consolas,monospace",
+              }}
+            />
             <CopyButton textToCopy={description} ariaLabel="Copy description" />
           </Flex>
         </Flex>

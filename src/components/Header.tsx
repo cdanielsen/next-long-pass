@@ -7,7 +7,7 @@ const Header = () => {
       as="header"
       direction="column"
       justify="center"
-      fontSize={["2.5rem", "5rem", "8rem"]}
+      fontSize={["2rem", "3rem", "4rem", "6rem", "8rem"]}
       lineHeight="125%"
       marginRight="1.5rem"
     >
