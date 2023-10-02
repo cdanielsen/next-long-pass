@@ -4,27 +4,20 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
-  Box,
   Button,
   ButtonGroup,
   Flex,
   Icon,
   IconButton,
-  Slider,
-  SliderFilledTrack,
-  SliderMark,
-  SliderThumb,
-  SliderTrack,
-  Text,
 } from "@chakra-ui/react";
 import { generate } from "random-words";
 import { IconType } from "react-icons";
 import { GiRobotAntennas, GiHouseKeys, GiCog } from "react-icons/gi";
-import { GoArrowSwitch } from "react-icons/go";
 
 import TypedPhrase from "./TypedPhrase";
 import { useDescription } from "../clients/openai";
 import CopyButton from "./CopyButton";
+import ConfigSlider from "./ConfigSlider";
 
 interface PassphraseConfig {
   maxLength: number;
@@ -55,9 +48,11 @@ const Content = () => {
   const { description, isLoading, isError, refetch } =
     useDescription(currentPassphrase);
 
-  const labelStyles = {
-    marginTop: "3",
-    fontSize: [".5rem", "1rem"],
+  const handleMaxLengthChange = (nextMaxLength: number) => {
+    setPassphraseConfig((priorConfig) => ({
+      ...priorConfig,
+      maxLength: nextMaxLength,
+    }));
   };
 
   return (
@@ -126,38 +121,14 @@ const Content = () => {
           padding="1rem 1rem 2rem 1rem"
           border="2px solid darkgrey"
         >
-          <Text fontSize={[".5rem", "1rem"]} marginBottom="1rem">
-            Max Word Length
-          </Text>
-          <Slider
-            min={3}
-            max={5}
+          <ConfigSlider
+            title="Max Word Length"
+            minValue={3}
+            maxValue={5}
             step={1}
             value={passphraseConfig.maxLength}
-            width="100%"
-            onChange={(value) => {
-              setPassphraseConfig({
-                ...passphraseConfig,
-                maxLength: value,
-              });
-            }}
-          >
-            <SliderMark value={3} {...labelStyles}>
-              3
-            </SliderMark>
-            <SliderMark value={4} {...labelStyles}>
-              4
-            </SliderMark>
-            <SliderMark value={5} {...labelStyles}>
-              5
-            </SliderMark>
-            <SliderTrack bg="blue.50">
-              <SliderFilledTrack />
-            </SliderTrack>
-            <SliderThumb boxSize={[4, 5]}>
-              <Box color="blue.500" as={GoArrowSwitch as IconType} />
-            </SliderThumb>
-          </Slider>
+            onChange={handleMaxLengthChange}
+          />
         </Flex>
       )}
       <ButtonGroup
