@@ -132,7 +132,7 @@ const Content = () => {
           direction="column"
           align="flex-start"
           marginTop="2rem"
-          width="75%"
+          padding={"0.5rem"}
         >
           <ConfigSlider
             title="Max Word Length"
@@ -153,7 +153,7 @@ const Content = () => {
         </Flex>
       </Collapse>
       <ButtonGroup
-        marginTop="2rem"
+        marginTop={["0.5rem", "1rem", "2rem"]}
         orientation="vertical"
         alignItems="flex-start"
         width="fit-content"

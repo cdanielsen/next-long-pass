@@ -50,7 +50,7 @@ const ConfigSlider = ({
       });
   return (
     <>
-      <Text fontSize={[".5rem", "1rem"]} marginBottom="0.75rem">
+      <Text fontSize={[".5rem", "1rem"]} marginBottom="0.5rem">
         {title}
       </Text>
       <Slider
