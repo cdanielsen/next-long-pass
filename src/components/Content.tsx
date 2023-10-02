@@ -6,6 +6,7 @@ import {
   AlertTitle,
   Button,
   ButtonGroup,
+  Collapse,
   Flex,
   Icon,
   IconButton,
@@ -21,6 +22,7 @@ import ConfigSlider from "./ConfigSlider";
 
 interface PassphraseConfig {
   maxLength: number;
+  wordCount: number;
 }
 
 const Content = () => {
@@ -30,16 +32,18 @@ const Content = () => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [passphraseConfig, setPassphraseConfig] = useState<PassphraseConfig>({
     maxLength: 5,
+    wordCount: 4,
   });
 
   const toggleConfig = () => {
     setIsConfigOpen((openState) => !openState);
   };
-  const updatePassphrase = ({ maxLength }: PassphraseConfig) => {
+
+  const updatePassphrase = ({ maxLength, wordCount }: PassphraseConfig) => {
     const nextPassphrase = generate({
       minLength: 3,
       maxLength,
-      exactly: 4,
+      exactly: wordCount,
       join: " ",
     });
     setCurrentPassphrase(nextPassphrase);
@@ -52,6 +56,13 @@ const Content = () => {
     setPassphraseConfig((priorConfig) => ({
       ...priorConfig,
       maxLength: nextMaxLength,
+    }));
+  };
+
+  const handleWordCountChange = (nextWordCount: number) => {
+    setPassphraseConfig((priorConfig) => ({
+      ...priorConfig,
+      wordCount: nextWordCount,
     }));
   };
 
@@ -113,13 +124,15 @@ const Content = () => {
           </Flex>
         </Flex>
       )}
-      {isConfigOpen && (
+      <Collapse
+        in={isConfigOpen}
+        transition={{ exit: { duration: 0.3 }, enter: { duration: 0.3 } }}
+      >
         <Flex
           direction="column"
           align="flex-start"
-          marginTop="1rem"
-          padding="1rem 1rem 2rem 1rem"
-          border="2px solid darkgrey"
+          marginTop="2rem"
+          width="75%"
         >
           <ConfigSlider
             title="Max Word Length"
@@ -129,8 +142,16 @@ const Content = () => {
             value={passphraseConfig.maxLength}
             onChange={handleMaxLengthChange}
           />
+          <ConfigSlider
+            title="Word Count"
+            minValue={3}
+            maxValue={5}
+            step={1}
+            value={passphraseConfig.wordCount}
+            onChange={handleWordCountChange}
+          />
         </Flex>
-      )}
+      </Collapse>
       <ButtonGroup
         marginTop="2rem"
         orientation="vertical"

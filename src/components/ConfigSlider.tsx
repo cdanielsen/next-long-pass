@@ -10,10 +10,12 @@ import {
 import { IconType } from "react-icons";
 import { GoArrowSwitch } from "react-icons/go";
 
-const labelStyles = {
+const labelStyles = (idx: number) => ({
   marginTop: "3",
+  // Very weird but the initial mark is off w/out this
+  marginLeft: idx ? "-2" : "0",
   fontSize: [".5rem", "1rem"],
-};
+});
 
 interface ConfigSliderProps {
   title: string;
@@ -40,7 +42,7 @@ const ConfigSlider = ({
           <SliderMark
             key={`mark-${idx}`}
             value={idx * step + minValue}
-            {...labelStyles}
+            {...labelStyles(idx)}
           >
             {idx * step + minValue}
           </SliderMark>
@@ -48,7 +50,7 @@ const ConfigSlider = ({
       });
   return (
     <>
-      <Text fontSize={[".5rem", "1rem"]} marginBottom="1rem">
+      <Text fontSize={[".5rem", "1rem"]} marginBottom="0.75rem">
         {title}
       </Text>
       <Slider
@@ -58,6 +60,7 @@ const ConfigSlider = ({
         value={value}
         width="100%"
         onChange={onChange}
+        marginBottom={"3rem"}
       >
         {generateMarks()}
         <SliderTrack bg="blue.100">
