@@ -8,7 +8,7 @@ import NotFound from "./NotFound";
 
 function App() {
   return (
-    <Flex direction="column" height="100vh">
+    <Flex id="App__Container" direction="column" minHeight="100vh">
       <Nav />
       <Routes>
         <Route path="/" element={<Root />} />

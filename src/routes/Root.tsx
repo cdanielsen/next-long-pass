@@ -7,7 +7,7 @@ import Error from "../components/Error";
 const Root = () => {
   return (
     <ErrorBoundary fallback={<Error />}>
-      <Flex height="100%">
+      <Flex id="Content__Container" flexGrow={1}>
         <Header />
         <Content />
       </Flex>

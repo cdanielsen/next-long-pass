@@ -2,7 +2,7 @@ import { Box, Flex, Image, Link, Text } from "@chakra-ui/react";
 
 const About = () => {
   return (
-    <Flex direction="column" justify="center" align="center" height="100%">
+    <Flex direction="column" justify="center" align="center" flexGrow={1}>
       <Text fontSize="lg" marginBottom="1rem">
         Inspired by{" "}
         <Link

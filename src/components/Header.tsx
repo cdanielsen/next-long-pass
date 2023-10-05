@@ -1,13 +1,18 @@
-import { Flex } from "@chakra-ui/react";
+import { Flex, useMediaQuery } from "@chakra-ui/react";
+
+const titleWords = ["You", "Need", "A", "Pass", "Phrase"];
+const landscapeSizes = ["1rem", "2.5rem", "3.5rem", "6rem", "8rem"];
+const portraitSizes = ["2rem", "3rem", "4rem", "6rem", "8rem"];
 
 const Header = () => {
-  const titleWords = ["You", "Need", "A", "Pass", "Phrase"];
+  const [isLandscapeMode] = useMediaQuery("(orientation: landscape)");
+
   return (
     <Flex
       as="header"
       direction="column"
       justify="center"
-      fontSize={["2rem", "3rem", "4rem", "6rem", "8rem"]}
+      fontSize={isLandscapeMode ? landscapeSizes : portraitSizes}
       lineHeight="125%"
       marginRight="1.5rem"
     >
