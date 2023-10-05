@@ -95,10 +95,16 @@ const Content = () => {
         </Flex>
       )}
       {isError && (
-        <Alert status="error" margin={"1rem 0"}>
+        <Alert status="error" margin="0.5rem 0">
           <AlertIcon />
-          <AlertTitle>Error fetching description.</AlertTitle>
-          <AlertDescription>Please try again later</AlertDescription>
+          <Flex direction="column">
+            <AlertTitle fontSize={["0.5rem", "0.75rem"]}>
+              Error fetching description.
+            </AlertTitle>
+            <AlertDescription fontSize={["0.5rem", "0.75rem"]}>
+              Please try again later
+            </AlertDescription>
+          </Flex>
         </Alert>
       )}
       {!isError && description && (
