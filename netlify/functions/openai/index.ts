@@ -19,7 +19,7 @@ const handler: Handler = async (event) => {
 
   const { passphrase } = JSON.parse(body) as PassphraseRequest;
 
-  const content = `Make a short phrase with quotes where the following words appear in the same order: ${passphrase
+  const content = `Create a short phrase where the following words all appear: ${passphrase
     .split(" ")
     .join(", ")}.`;
 
