@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { TemperatureModes } from "../../components/Content";
 
 interface PassphraseResponse {
   message: string;
@@ -6,9 +7,13 @@ interface PassphraseResponse {
 
 export interface PassphraseRequest {
   passphrase: string;
+  temperature: TemperatureModes;
 }
 
-export const useDescription = (passphrase: string | null) => {
+export const useDescription = (
+  passphrase: string | null,
+  temperature: TemperatureModes,
+) => {
   const [description, setDescription] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -21,7 +26,7 @@ export const useDescription = (passphrase: string | null) => {
       const result = await fetch("api/openai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ passphrase }),
+        body: JSON.stringify({ passphrase, temperature }),
       }).then((response) => response.json() as Promise<PassphraseResponse>);
 
       setDescription(result.message);
@@ -30,7 +35,7 @@ export const useDescription = (passphrase: string | null) => {
       setIsError(true);
     }
     setIsLoading(false);
-  }, [passphrase]);
+  }, [passphrase, temperature]);
 
   useEffect(() => {
     if (!passphrase) {

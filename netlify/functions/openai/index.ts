@@ -17,15 +17,16 @@ const handler: Handler = async (event) => {
     throw new Error("Missing request body!");
   }
 
-  const { passphrase } = JSON.parse(body) as PassphraseRequest;
+  const { passphrase, temperature } = JSON.parse(body) as PassphraseRequest;
 
-  const content = `Create a short phrase where the following words all appear: ${passphrase
+  const content = `Create a short phrase or mnemonic where the following words all appear: ${passphrase
     .split(" ")
     .join(", ")}.`;
 
   const completion = await openai.chat.completions.create({
     messages: [{ role: "user", content }],
     model: "gpt-3.5-turbo",
+    temperature,
   });
 
   const { content: message } = completion.choices[0].message;

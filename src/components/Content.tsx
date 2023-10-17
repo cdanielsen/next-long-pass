@@ -10,6 +10,10 @@ import {
   Flex,
   Icon,
   IconButton,
+  Radio,
+  RadioGroup,
+  Stack,
+  Text,
 } from "@chakra-ui/react";
 import { generate } from "random-words";
 import { IconType } from "react-icons";
@@ -20,9 +24,13 @@ import { useDescription } from "../clients/openai";
 import CopyButton from "./CopyButton";
 import ConfigSlider from "./ConfigSlider";
 
+const TemperatureValues = [0.5, 1.5] as const;
+export type TemperatureModes = (typeof TemperatureValues)[number];
+
 interface PassphraseConfig {
   maxLength: number;
   wordCount: number;
+  temperature: TemperatureModes;
 }
 
 const Content = () => {
@@ -33,6 +41,7 @@ const Content = () => {
   const [passphraseConfig, setPassphraseConfig] = useState<PassphraseConfig>({
     maxLength: 5,
     wordCount: 4,
+    temperature: TemperatureValues[0],
   });
 
   const toggleConfig = () => {
@@ -49,8 +58,10 @@ const Content = () => {
     setCurrentPassphrase(nextPassphrase);
   };
 
-  const { description, isLoading, isError, refetch } =
-    useDescription(currentPassphrase);
+  const { description, isLoading, isError, refetch } = useDescription(
+    currentPassphrase,
+    passphraseConfig.temperature,
+  );
 
   const handleMaxLengthChange = (nextMaxLength: number) => {
     setPassphraseConfig((priorConfig) => ({
@@ -63,6 +74,15 @@ const Content = () => {
     setPassphraseConfig((priorConfig) => ({
       ...priorConfig,
       wordCount: nextWordCount,
+    }));
+  };
+
+  const handleTemperatureChange = (nextTemperature: string) => {
+    // Safe to assert here as we're only passing stringified values from the type
+    const nextTemperatureAsNumber = Number(nextTemperature) as TemperatureModes;
+    setPassphraseConfig((priorConfig) => ({
+      ...priorConfig,
+      temperature: nextTemperatureAsNumber,
     }));
   };
 
@@ -162,6 +182,23 @@ const Content = () => {
             value={passphraseConfig.wordCount}
             onChange={handleWordCountChange}
           />
+          <Text fontSize={[".5rem", "1rem"]} marginBottom="0.5rem">
+            AI Mode
+          </Text>
+          <RadioGroup
+            name="AI Mode"
+            onChange={handleTemperatureChange}
+            value={`${passphraseConfig.temperature}`}
+          >
+            <Stack direction="column">
+              <Radio value={TemperatureValues[0].toString()} size="sm">
+                Standard
+              </Radio>
+              <Radio value={TemperatureValues[1].toString()} size="sm">
+                Matthew McConaughey
+              </Radio>
+            </Stack>
+          </RadioGroup>
         </Flex>
       </Collapse>
       <ButtonGroup
