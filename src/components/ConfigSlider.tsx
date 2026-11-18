@@ -7,6 +7,7 @@ import {
   SliderTrack,
   Text,
 } from "@chakra-ui/react";
+import { ReactNode } from "react";
 import { IconType } from "react-icons";
 import { GoArrowSwitch } from "react-icons/go";
 
@@ -19,6 +20,7 @@ const labelStyles = (idx: number) => ({
 
 interface ConfigSliderProps {
   title: string;
+  subtitle?: ReactNode;
   minValue: number;
   maxValue: number;
   step: number;
@@ -28,6 +30,7 @@ interface ConfigSliderProps {
 
 const ConfigSlider = ({
   title,
+  subtitle,
   minValue,
   maxValue,
   step,
@@ -52,6 +55,7 @@ const ConfigSlider = ({
     <>
       <Text fontSize={[".5rem", "1rem"]} marginBottom="0.5rem">
         {title}
+        {subtitle}
       </Text>
       <Slider
         min={minValue}
