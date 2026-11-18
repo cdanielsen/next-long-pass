@@ -2,11 +2,11 @@ import { Flex } from "@chakra-ui/react";
 import Header from "../components/Header";
 import PassphraseGenerator from "../components/PassphraseGenerator";
 import { ErrorBoundary } from "react-error-boundary";
-import Error from "../components/Error";
+import ServerError from "../components/ServerError";
 
 const Root = () => {
   return (
-    <ErrorBoundary fallback={<Error />}>
+    <ErrorBoundary fallback={<ServerError />}>
       <Flex id="Content__Container" flexGrow={1}>
         <Header />
         <PassphraseGenerator />
