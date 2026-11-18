@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import type { Handler, HandlerResponse } from "@netlify/functions";
-import type { PassphraseRequest } from "../../../src/clients/openai";
+import { validateRequest } from "./validate";
 
 type ResponseBody = { message: string } | { error: string };
 
@@ -22,12 +22,18 @@ const handler: Handler = async (event) => {
     return json(405, { error: "Method not allowed" }, { Allow: "POST" });
   }
 
-  let request: PassphraseRequest;
+  let body: unknown;
   try {
-    request = JSON.parse(event.body ?? "") as PassphraseRequest;
+    body = JSON.parse(event.body ?? "");
   } catch {
     return json(400, { error: "Request body must be valid JSON" });
   }
+
+  const validation = validateRequest(body);
+  if (!validation.ok) {
+    return json(400, { error: validation.error });
+  }
+  const { words, temperature } = validation.value;
 
   const apiKey = process.env.OPEN_AI_KEY;
   if (!apiKey) {
@@ -35,10 +41,9 @@ const handler: Handler = async (event) => {
     return json(500, { error: "Server is not configured" });
   }
 
-  const { passphrase, temperature } = request;
-  const content = `Create a short phrase or mnemonic where the following words all appear: ${passphrase
-    .split(" ")
-    .join(", ")}.`;
+  const content = `Create a short phrase or mnemonic where the following words all appear: ${words.join(
+    ", ",
+  )}.`;
 
   try {
     const completion = await getClient(apiKey).chat.completions.create({
