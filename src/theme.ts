@@ -7,6 +7,20 @@ const theme = extendTheme({
     heading: DISPLAY_FONT,
     body: DISPLAY_FONT,
   },
+  styles: {
+    // Merged with Chakra's default global styles (body colour, bg, etc.)
+    global: {
+      body: {
+        minWidth: "320px",
+        minHeight: "100vh",
+      },
+      "#root": {
+        maxWidth: "1280px",
+        margin: "0 auto",
+        padding: "0 1.5rem",
+      },
+    },
+  },
 });
 
 export default theme;
