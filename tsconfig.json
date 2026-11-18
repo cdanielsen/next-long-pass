@@ -13,6 +13,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    // TS 6 no longer auto-includes every @types package
+    "types": ["node", "vite/client"],
 
     /* Linting */
     "strict": true,

@@ -1,5 +1,5 @@
 import { Flex, HStack, Box } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 const Nav = () => {
   return (

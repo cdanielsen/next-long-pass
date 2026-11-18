@@ -13,16 +13,13 @@ import PassphraseGenerator from "./PassphraseGenerator";
 import theme from "../theme";
 import { DEFAULT_WORDS } from "../../shared/passphrase";
 
-// The typing animation is timer-driven noise in jsdom; phrases are asserted
-// through the container aria-labels instead.
-vi.mock("typewriter-effect", () => ({ default: () => null }));
-
 interface RequestBody {
   passphrase: string;
   mode: string;
 }
 
-const fetchMock = vi.fn<[string, RequestInit], Promise<Response>>();
+const fetchMock =
+  vi.fn<(url: string, init: RequestInit) => Promise<Response>>();
 
 const jsonResponse = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), {
@@ -48,7 +45,7 @@ const shownPassphrase = () => {
     .getByLabelText(/^A set of random words/)
     .getAttribute("aria-label");
   const match = /"(.+)"/.exec(label ?? "");
-  if (!match) throw new Error(`Unexpected passphrase label: ${label}`);
+  if (!match) throw new Error(`Unexpected passphrase label: ${String(label)}`);
   return match[1];
 };
 
@@ -61,6 +58,11 @@ beforeEach(() => {
       unobserve: vi.fn(),
       disconnect: vi.fn(),
     })),
+  );
+  // jsdom lacks matchMedia (used by the typing animation's reduced-motion check)
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn((query: string) => ({ matches: false, media: query })),
   );
   // framer-motion (Collapse) calls this; jsdom doesn't implement it
   vi.stubGlobal("scrollTo", () => undefined);

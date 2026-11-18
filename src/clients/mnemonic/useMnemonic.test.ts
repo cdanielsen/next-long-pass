@@ -7,7 +7,10 @@ import { MnemonicError } from "./api";
 import { useMnemonic } from "./useMnemonic";
 
 const { fetchMnemonic } = vi.hoisted(() => ({
-  fetchMnemonic: vi.fn<[MnemonicRequest, AbortSignal?], Promise<string>>(),
+  fetchMnemonic:
+    vi.fn<
+      (request: MnemonicRequest, signal?: AbortSignal) => Promise<string>
+    >(),
 }));
 
 vi.mock("./api", async (importOriginal) => ({

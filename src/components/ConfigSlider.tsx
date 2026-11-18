@@ -8,7 +8,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { ReactNode } from "react";
-import { IconType } from "react-icons";
 import { GoArrowSwitch } from "react-icons/go";
 
 const labelStyles = (idx: number) => ({
@@ -41,13 +40,10 @@ const ConfigSlider = ({
     Array(Math.ceil((maxValue - minValue + 1) / step))
       .fill("")
       .map((_, idx) => {
+        const markValue = idx * step + minValue;
         return (
-          <SliderMark
-            key={`mark-${idx}`}
-            value={idx * step + minValue}
-            {...labelStyles(idx)}
-          >
-            {idx * step + minValue}
+          <SliderMark key={markValue} value={markValue} {...labelStyles(idx)}>
+            {markValue}
           </SliderMark>
         );
       });
@@ -71,7 +67,7 @@ const ConfigSlider = ({
           <SliderFilledTrack />
         </SliderTrack>
         <SliderThumb boxSize={[4, 5]}>
-          <Box color="blue.500" as={GoArrowSwitch as IconType} />
+          <Box color="blue.500" as={GoArrowSwitch} />
         </SliderThumb>
       </Slider>
     </>

@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import type { ReasoningEffort } from "openai/resources/shared";
 import type { Handler, HandlerResponse } from "@netlify/functions";
 import type { MnemonicResponse } from "../../../shared/api";
 import { validateRequest } from "./validate";
@@ -63,9 +62,7 @@ const handler: Handler = async (event) => {
     const completion = await getClient(apiKey).chat.completions.create({
       messages: buildMessages(words, mode),
       model,
-      // openai@4 types predate "none" (the API accepts it). Drop the cast
-      // once the SDK is upgraded to a major version that types it.
-      reasoning_effort: "none" as unknown as ReasoningEffort,
+      reasoning_effort: "none",
       max_completion_tokens: MAX_COMPLETION_TOKENS,
     });
 

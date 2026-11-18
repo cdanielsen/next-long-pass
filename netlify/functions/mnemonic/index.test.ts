@@ -2,13 +2,15 @@ import type { HandlerContext, HandlerEvent } from "@netlify/functions";
 import type { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const create = vi.fn<
-  [ChatCompletionCreateParamsNonStreaming],
-  Promise<unknown>
->();
+const create =
+  vi.fn<(body: ChatCompletionCreateParamsNonStreaming) => Promise<unknown>>();
 
+// The handler calls `new OpenAI(...)`; Vitest 4+ only constructs mocks whose
+// implementation is a class or function, so mock with a class.
 vi.mock("openai", () => ({
-  default: vi.fn(() => ({ chat: { completions: { create } } })),
+  default: class {
+    chat = { completions: { create } };
+  },
 }));
 
 const { handler } = await import("./index");
