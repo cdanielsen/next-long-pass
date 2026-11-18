@@ -10,6 +10,11 @@ Frontend:
 - React Components and styling with [Chakra UI](https://chakra-ui.com/)
 - Icons via [React Icons](https://react-icons.github.io/react-icons)
 
+Passphrases:
+
+- Words drawn from the [EFF Short Wordlist #1](https://www.eff.org/dice) (1,296 words, ~10.3 bits each), licensed [CC BY 3.0 US](https://creativecommons.org/licenses/by/3.0/us/)
+- Selected with `crypto.getRandomValues` (rejection sampling, no modulo bias)
+
 Backend:
 
 - Open AI integration via [Netlify functions](https://www.netlify.com/products/functions/)
@@ -31,3 +36,9 @@ npm run dev
 ```
 
 Dev environment runs at localhost:8888 by default
+
+Run unit tests
+
+```sh
+npm test
+```

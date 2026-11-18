@@ -21,6 +21,17 @@ const About = () => {
           />
         </Box>
       </Link>
+      <Text fontSize="sm" marginTop="1rem">
+        Words from the{" "}
+        <Link
+          href="https://www.eff.org/dice"
+          color="blue.500"
+          _hover={{ textDecoration: "none" }}
+        >
+          EFF short wordlist
+        </Link>{" "}
+        (CC BY 3.0 US)
+      </Text>
     </Flex>
   );
 };
