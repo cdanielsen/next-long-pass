@@ -1,8 +1,5 @@
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import {
-  TemperatureValues,
-  type TemperatureModes,
-} from "../../../src/lib/config";
+import { TemperatureValues, type TemperatureModes } from "../../../shared/api";
 
 const BASE_INSTRUCTIONS =
   "You write mnemonics that help people remember a passphrase. " +

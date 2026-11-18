@@ -9,7 +9,8 @@ import MnemonicErrorAlert from "./MnemonicErrorAlert";
 import ConfigPanel, { type PassphraseConfig } from "./ConfigPanel";
 import GeneratorActions from "./GeneratorActions";
 import { generatePassphrase } from "../lib/passphrase";
-import { DEFAULT_WORDS, TemperatureValues } from "../lib/config";
+import { DEFAULT_WORDS } from "../../shared/passphrase";
+import { TemperatureValues } from "../../shared/api";
 
 const PassphraseGenerator = () => {
   const [currentPassphrase, setCurrentPassphrase] = useState<string | null>(

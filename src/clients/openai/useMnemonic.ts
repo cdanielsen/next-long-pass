@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { TemperatureModes } from "../../lib/config";
+import type { TemperatureModes } from "../../../shared/api";
 import { fetchMnemonic } from "./api";
 
 /**

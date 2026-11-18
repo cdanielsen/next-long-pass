@@ -1,11 +1,9 @@
-import type { TemperatureModes } from "../../lib/config";
-
-export interface PassphraseRequest {
-  passphrase: string;
-  temperature: TemperatureModes;
-}
-
-export const MNEMONIC_ENDPOINT = "/api/openai";
+import {
+  MNEMONIC_ENDPOINT,
+  type MnemonicFailure,
+  type MnemonicRequest,
+  type MnemonicSuccess,
+} from "../../../shared/api";
 
 const FALLBACK_MESSAGE = "Something went wrong generating the mnemonic";
 
@@ -20,10 +18,10 @@ export class MnemonicError extends Error {
   }
 }
 
-interface ResponseBody {
-  message?: unknown;
-  error?: unknown;
-}
+/** The response JSON is untrusted: same keys as MnemonicResponse, unknown values. */
+type UntrustedBody = {
+  [K in keyof MnemonicSuccess | keyof MnemonicFailure]?: unknown;
+};
 
 /**
  * Request a mnemonic for `passphrase`. Throws `MnemonicError` for non-OK
@@ -31,7 +29,7 @@ interface ResponseBody {
  * Network errors and aborts propagate as-is.
  */
 export const fetchMnemonic = async (
-  request: PassphraseRequest,
+  request: MnemonicRequest,
   signal?: AbortSignal,
 ): Promise<string> => {
   const response = await fetch(MNEMONIC_ENDPOINT, {
@@ -41,7 +39,9 @@ export const fetchMnemonic = async (
     signal,
   });
 
-  const body = (await response.json().catch(() => null)) as ResponseBody | null;
+  const body = (await response
+    .json()
+    .catch(() => null)) as UntrustedBody | null;
 
   if (!response.ok) {
     const message =

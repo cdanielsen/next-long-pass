@@ -1,7 +1,4 @@
-import {
-  TemperatureValues,
-  type TemperatureModes,
-} from "../../../src/lib/config";
+import { TemperatureValues, type TemperatureModes } from "../../../shared/api";
 
 const capitalize = (word: string) => word[0].toUpperCase() + word.slice(1);
 

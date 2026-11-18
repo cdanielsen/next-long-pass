@@ -1,14 +1,12 @@
+import { MAX_WORDS, MIN_WORDS, WORD_PATTERN } from "../../../shared/passphrase";
 import {
-  MAX_WORDS,
-  MIN_WORDS,
-  TemperatureModes,
   TemperatureValues,
-  WORD_PATTERN,
-} from "../../../src/lib/config";
-import type { PassphraseRequest } from "../../../src/clients/openai";
+  type MnemonicRequest,
+  type TemperatureModes,
+} from "../../../shared/api";
 
 export type ValidationResult =
-  | { ok: true; value: PassphraseRequest & { words: string[] } }
+  | { ok: true; value: MnemonicRequest & { words: string[] } }
   | { ok: false; error: string };
 
 const fail = (error: string): ValidationResult => ({ ok: false, error });

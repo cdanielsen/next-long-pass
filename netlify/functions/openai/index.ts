@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import type { ReasoningEffort } from "openai/resources/shared";
 import type { Handler, HandlerResponse } from "@netlify/functions";
+import type { MnemonicResponse } from "../../../shared/api";
 import { validateRequest } from "./validate";
 import { mockMnemonic } from "./mock";
 import { buildMessages } from "./prompt";
@@ -16,11 +17,9 @@ const DEFAULT_MODEL = "gpt-6-luna";
 /** Mnemonics come back in ~20-30 tokens; cap spend on runaway output. */
 const MAX_COMPLETION_TOKENS = 120;
 
-type ResponseBody = { message: string } | { error: string };
-
 const json = (
   statusCode: number,
-  body: ResponseBody,
+  body: MnemonicResponse,
   headers: Record<string, string> = {},
 ): HandlerResponse => ({
   statusCode,

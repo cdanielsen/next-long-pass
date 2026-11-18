@@ -2,11 +2,12 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MnemonicError, type PassphraseRequest } from "./api";
+import type { MnemonicRequest } from "../../../shared/api";
+import { MnemonicError } from "./api";
 import { useMnemonic } from "./useMnemonic";
 
 const { fetchMnemonic } = vi.hoisted(() => ({
-  fetchMnemonic: vi.fn<[PassphraseRequest, AbortSignal?], Promise<string>>(),
+  fetchMnemonic: vi.fn<[MnemonicRequest, AbortSignal?], Promise<string>>(),
 }));
 
 vi.mock("./api", async (importOriginal) => ({
@@ -27,7 +28,7 @@ const deferred = <T>() => {
 
 /** Make fetchMnemonic reject with AbortError when its signal aborts, like real fetch. */
 const abortable = <T>(d: ReturnType<typeof deferred<T>>) =>
-  vi.fn((_req: PassphraseRequest, signal?: AbortSignal) => {
+  vi.fn((_req: MnemonicRequest, signal?: AbortSignal) => {
     signal?.addEventListener("abort", () => {
       d.reject(new DOMException("Aborted", "AbortError"));
     });

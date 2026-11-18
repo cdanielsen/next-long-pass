@@ -9,12 +9,8 @@ import {
 
 import ConfigSlider from "./ConfigSlider";
 import EntropyLabel from "./EntropyLabel";
-import {
-  MAX_WORDS,
-  MIN_WORDS,
-  TemperatureModes,
-  TemperatureValues,
-} from "../lib/config";
+import { MAX_WORDS, MIN_WORDS } from "../../shared/passphrase";
+import { TemperatureModes, TemperatureValues } from "../../shared/api";
 
 export interface PassphraseConfig {
   wordCount: number;

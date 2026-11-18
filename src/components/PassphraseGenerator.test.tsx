@@ -10,7 +10,7 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import PassphraseGenerator from "./PassphraseGenerator";
-import { DEFAULT_WORDS } from "../lib/config";
+import { DEFAULT_WORDS } from "../../shared/passphrase";
 
 // The typing animation is timer-driven noise in jsdom; phrases are asserted
 // through the container aria-labels instead.
