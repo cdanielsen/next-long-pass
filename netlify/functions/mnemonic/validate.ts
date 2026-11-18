@@ -1,20 +1,11 @@
-import {
-  MAX_WORDS,
-  MIN_WORDS,
-  TemperatureModes,
-  TemperatureValues,
-  WORD_PATTERN,
-} from "../../../src/lib/config";
-import type { PassphraseRequest } from "../../../src/clients/openai";
+import { MAX_WORDS, MIN_WORDS, WORD_PATTERN } from "../../../shared/passphrase";
+import { AI_MODES, isAiMode, type MnemonicRequest } from "../../../shared/api";
 
 export type ValidationResult =
-  | { ok: true; value: PassphraseRequest & { words: string[] } }
+  | { ok: true; value: MnemonicRequest & { words: string[] } }
   | { ok: false; error: string };
 
 const fail = (error: string): ValidationResult => ({ ok: false, error });
-
-const isTemperature = (value: unknown): value is TemperatureModes =>
-  (TemperatureValues as readonly unknown[]).includes(value);
 
 /**
  * Only accept requests the UI could actually produce, so the function can't
@@ -25,7 +16,7 @@ export const validateRequest = (input: unknown): ValidationResult => {
     return fail("Request body must be a JSON object");
   }
 
-  const { passphrase, temperature } = input as Record<string, unknown>;
+  const { passphrase, mode } = input as Record<string, unknown>;
 
   if (typeof passphrase !== "string") {
     return fail("passphrase must be a string");
@@ -39,9 +30,9 @@ export const validateRequest = (input: unknown): ValidationResult => {
     return fail("passphrase contains invalid words");
   }
 
-  if (!isTemperature(temperature)) {
-    return fail(`temperature must be one of ${TemperatureValues.join(", ")}`);
+  if (!isAiMode(mode)) {
+    return fail(`mode must be one of ${AI_MODES.join(", ")}`);
   }
 
-  return { ok: true, value: { passphrase, temperature, words } };
+  return { ok: true, value: { passphrase, mode, words } };
 };

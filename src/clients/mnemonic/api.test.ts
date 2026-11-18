@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { MnemonicError, fetchMnemonic } from "./api";
 
-const REQUEST = { passphrase: "apple bring crane", temperature: 0.5 } as const;
+const REQUEST = { passphrase: "apple bring crane", mode: "standard" } as const;
 
 const stubFetch = (response: Response | Error) => {
   const fetchMock = vi.fn(() =>
@@ -42,7 +42,7 @@ describe("fetchMnemonic", () => {
     await expect(fetchMnemonic(REQUEST, controller.signal)).resolves.toBe(
       "A mnemonic.",
     );
-    expect(fetchMock).toHaveBeenCalledWith("/api/openai", {
+    expect(fetchMock).toHaveBeenCalledWith("/api/mnemonic", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(REQUEST),

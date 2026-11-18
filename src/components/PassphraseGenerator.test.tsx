@@ -10,7 +10,7 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import PassphraseGenerator from "./PassphraseGenerator";
-import { DEFAULT_WORDS } from "../lib/config";
+import { DEFAULT_WORDS } from "../../shared/passphrase";
 
 // The typing animation is timer-driven noise in jsdom; phrases are asserted
 // through the container aria-labels instead.
@@ -18,7 +18,7 @@ vi.mock("typewriter-effect", () => ({ default: () => null }));
 
 interface RequestBody {
   passphrase: string;
-  temperature: number;
+  mode: string;
 }
 
 const fetchMock = vi.fn<[string, RequestInit], Promise<Response>>();
@@ -91,8 +91,8 @@ describe("PassphraseGenerator", () => {
 
     const passphrase = shownPassphrase();
     expect(passphrase.split(" ")).toHaveLength(DEFAULT_WORDS);
-    expect(requestBodies()).toEqual([{ passphrase, temperature: 0.5 }]);
-    expect(fetchMock.mock.calls[0][0]).toBe("/api/openai");
+    expect(requestBodies()).toEqual([{ passphrase, mode: "standard" }]);
+    expect(fetchMock.mock.calls[0][0]).toBe("/api/mnemonic");
 
     expect(
       await screen.findByLabelText(
@@ -123,7 +123,7 @@ describe("PassphraseGenerator", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Generate a new passphrase" }),
     );
-    expect(requestBodies()[0].temperature).toBe(1.5);
+    expect(requestBodies()[0].mode).toBe("mcconaughey");
   });
 
   it("uses the word count slider for the next passphrase and entropy label", async () => {

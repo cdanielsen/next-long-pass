@@ -9,22 +9,18 @@ import {
 
 import ConfigSlider from "./ConfigSlider";
 import EntropyLabel from "./EntropyLabel";
-import {
-  MAX_WORDS,
-  MIN_WORDS,
-  TemperatureModes,
-  TemperatureValues,
-} from "../lib/config";
+import { MAX_WORDS, MIN_WORDS } from "../../shared/passphrase";
+import { AI_MODES, isAiMode, type AiMode } from "../../shared/api";
 
 export interface PassphraseConfig {
   wordCount: number;
-  temperature: TemperatureModes;
+  mode: AiMode;
 }
 
-const AI_MODE_OPTIONS: readonly { value: TemperatureModes; label: string }[] = [
-  { value: TemperatureValues[0], label: "Standard" },
-  { value: TemperatureValues[1], label: "Matthew McConaughey" },
-];
+const AI_MODE_LABELS: Record<AiMode, string> = {
+  standard: "Standard",
+  mcconaughey: "Matthew McConaughey",
+};
 
 interface ConfigPanelProps {
   isOpen: boolean;
@@ -34,11 +30,8 @@ interface ConfigPanelProps {
 
 const ConfigPanel = ({ isOpen, config, onChange }: ConfigPanelProps) => {
   const handleModeChange = (nextValue: string) => {
-    const option = AI_MODE_OPTIONS.find(
-      ({ value }) => String(value) === nextValue,
-    );
-    if (option) {
-      onChange({ temperature: option.value });
+    if (isAiMode(nextValue)) {
+      onChange({ mode: nextValue });
     }
   };
 
@@ -70,12 +63,12 @@ const ConfigPanel = ({ isOpen, config, onChange }: ConfigPanelProps) => {
         <RadioGroup
           name="AI Mode"
           onChange={handleModeChange}
-          value={String(config.temperature)}
+          value={config.mode}
         >
           <Stack direction="column">
-            {AI_MODE_OPTIONS.map(({ value, label }) => (
-              <Radio key={value} value={String(value)} size="sm">
-                {label}
+            {AI_MODES.map((mode) => (
+              <Radio key={mode} value={mode} size="sm">
+                {AI_MODE_LABELS[mode]}
               </Radio>
             ))}
           </Stack>

@@ -4,12 +4,13 @@ import { IconType } from "react-icons";
 import { GiRobotAntennas, GiHouseKeys } from "react-icons/gi";
 
 import PhraseRow from "./PhraseRow";
-import { useMnemonic } from "../clients/openai";
+import { useMnemonic } from "../clients/mnemonic";
 import MnemonicErrorAlert from "./MnemonicErrorAlert";
 import ConfigPanel, { type PassphraseConfig } from "./ConfigPanel";
 import GeneratorActions from "./GeneratorActions";
 import { generatePassphrase } from "../lib/passphrase";
-import { DEFAULT_WORDS, TemperatureValues } from "../lib/config";
+import { DEFAULT_WORDS } from "../../shared/passphrase";
+import { DEFAULT_AI_MODE } from "../../shared/api";
 
 const PassphraseGenerator = () => {
   const [currentPassphrase, setCurrentPassphrase] = useState<string | null>(
@@ -18,7 +19,7 @@ const PassphraseGenerator = () => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [passphraseConfig, setPassphraseConfig] = useState<PassphraseConfig>({
     wordCount: DEFAULT_WORDS,
-    temperature: TemperatureValues[0],
+    mode: DEFAULT_AI_MODE,
   });
 
   const toggleConfig = () => {
@@ -30,12 +31,12 @@ const PassphraseGenerator = () => {
   const handleNewPassphrase = () => {
     const nextPassphrase = generatePassphrase(passphraseConfig.wordCount);
     setCurrentPassphrase(nextPassphrase);
-    void generate(nextPassphrase, passphraseConfig.temperature);
+    void generate(nextPassphrase, passphraseConfig.mode);
   };
 
   const handleRegenerateMnemonic = () => {
     if (currentPassphrase) {
-      void generate(currentPassphrase, passphraseConfig.temperature);
+      void generate(currentPassphrase, passphraseConfig.mode);
     }
   };
 

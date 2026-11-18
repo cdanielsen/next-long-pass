@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import type { ReasoningEffort } from "openai/resources/shared";
 import type { Handler, HandlerResponse } from "@netlify/functions";
+import type { MnemonicResponse } from "../../../shared/api";
 import { validateRequest } from "./validate";
 import { mockMnemonic } from "./mock";
 import { buildMessages } from "./prompt";
@@ -16,11 +17,9 @@ const DEFAULT_MODEL = "gpt-6-luna";
 /** Mnemonics come back in ~20-30 tokens; cap spend on runaway output. */
 const MAX_COMPLETION_TOKENS = 120;
 
-type ResponseBody = { message: string } | { error: string };
-
 const json = (
   statusCode: number,
-  body: ResponseBody,
+  body: MnemonicResponse,
   headers: Record<string, string> = {},
 ): HandlerResponse => ({
   statusCode,
@@ -47,11 +46,11 @@ const handler: Handler = async (event) => {
   if (!validation.ok) {
     return json(400, { error: validation.error });
   }
-  const { words, temperature } = validation.value;
+  const { words, mode } = validation.value;
   const model = process.env.OPENAI_MODEL ?? DEFAULT_MODEL;
 
   if (process.env.MOCK_AI === "true") {
-    return json(200, { message: mockMnemonic(words, temperature) });
+    return json(200, { message: mockMnemonic(words, mode) });
   }
 
   const apiKey = process.env.OPEN_AI_KEY;
@@ -62,7 +61,7 @@ const handler: Handler = async (event) => {
 
   try {
     const completion = await getClient(apiKey).chat.completions.create({
-      messages: buildMessages(words, temperature),
+      messages: buildMessages(words, mode),
       model,
       // openai@4 types predate "none" (the API accepts it). Drop the cast
       // once the SDK is upgraded to a major version that types it.
