@@ -10,6 +10,7 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import PassphraseGenerator from "./PassphraseGenerator";
+import theme from "../theme";
 import { DEFAULT_WORDS } from "../../shared/passphrase";
 
 // The typing animation is timer-driven noise in jsdom; phrases are asserted
@@ -36,7 +37,7 @@ const requestBodies = () =>
 
 const renderGenerator = () =>
   render(
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <PassphraseGenerator />
     </ChakraProvider>,
   );

@@ -4,8 +4,6 @@ import { IconType } from "react-icons";
 import CopyButton from "./CopyButton";
 import TypedPhrase from "./TypedPhrase";
 
-const MONOSPACE_FONT = "SFMono-Regular,Menlo,Monaco,Consolas,monospace";
-
 interface PhraseRowProps {
   icon: IconType;
   iconLabel: string;
@@ -36,7 +34,7 @@ const PhraseRow = ({
       <TypedPhrase
         phrase={phrase}
         ariaLabel={phraseLabel}
-        containerOptions={monospace ? { fontFamily: MONOSPACE_FONT } : {}}
+        containerOptions={monospace ? { fontFamily: "mono" } : {}}
       />
       <CopyButton textToCopy={phrase} ariaLabel={copyLabel} />
     </Flex>
