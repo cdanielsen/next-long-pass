@@ -57,7 +57,7 @@ const ConfigPanel = ({ isOpen, config, onChange }: ConfigPanelProps) => {
             onChange({ wordCount });
           }}
         />
-        <Text fontSize={[".5rem", "1rem"]} marginBottom="0.5rem">
+        <Text fontSize={[".75rem", "1rem"]} marginBottom="0.5rem">
           AI Mode
         </Text>
         <RadioGroup
