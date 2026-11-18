@@ -1,7 +1,11 @@
 import type { HandlerContext, HandlerEvent } from "@netlify/functions";
+import type { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const create = vi.fn<[Record<string, unknown>], Promise<unknown>>();
+const create = vi.fn<
+  [ChatCompletionCreateParamsNonStreaming],
+  Promise<unknown>
+>();
 
 vi.mock("openai", () => ({
   default: vi.fn(() => ({ chat: { completions: { create } } })),
@@ -60,6 +64,23 @@ describe("openai function", () => {
     // Reasoning models reject non-default temperatures
     expect(create.mock.lastCall?.[0]).not.toHaveProperty("temperature");
   });
+
+  it.each([
+    [0.5, /clear and memorable/],
+    [1.5, /McConaughey/],
+  ])(
+    "expresses AI mode %s in the system prompt",
+    async (temperature, style) => {
+      await invoke({ ...VALID, temperature });
+      const [system, user] = create.mock.lastCall?.[0].messages ?? [];
+      expect(system.role).toBe("system");
+      expect(system.content).toMatch(style);
+      expect(user).toEqual({
+        role: "user",
+        content: "apple, bring, crane, dozen",
+      });
+    },
+  );
 
   it("uses OPENAI_MODEL when set", async () => {
     vi.stubEnv("OPENAI_MODEL", "gpt-6-sol");

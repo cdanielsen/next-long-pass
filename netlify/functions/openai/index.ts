@@ -3,6 +3,7 @@ import type { ReasoningEffort } from "openai/resources/shared";
 import type { Handler, HandlerResponse } from "@netlify/functions";
 import { validateRequest } from "./validate";
 import { mockMnemonic } from "./mock";
+import { buildMessages } from "./prompt";
 
 /**
  * Cheapest current-generation chat model as of 2026-11. It's a reasoning
@@ -59,13 +60,9 @@ const handler: Handler = async (event) => {
     return json(500, { error: "Server is not configured" });
   }
 
-  const content = `Create a short phrase or mnemonic where the following words all appear: ${words.join(
-    ", ",
-  )}.`;
-
   try {
     const completion = await getClient(apiKey).chat.completions.create({
-      messages: [{ role: "user", content }],
+      messages: buildMessages(words, temperature),
       model,
       // openai@4 types predate "none" (the API accepts it). Drop the cast
       // once the SDK is upgraded to a major version that types it.
