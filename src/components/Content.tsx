@@ -1,36 +1,14 @@
 import { useState } from "react";
-import {
-  Button,
-  ButtonGroup,
-  Collapse,
-  Flex,
-  IconButton,
-  Radio,
-  RadioGroup,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, IconButton } from "@chakra-ui/react";
 import { IconType } from "react-icons";
 import { GiRobotAntennas, GiHouseKeys, GiCog } from "react-icons/gi";
 
 import PhraseRow from "./PhraseRow";
 import { useMnemonic } from "../clients/openai";
 import MnemonicErrorAlert from "./MnemonicErrorAlert";
-import ConfigSlider from "./ConfigSlider";
-import EntropyLabel from "./EntropyLabel";
+import ConfigPanel, { type PassphraseConfig } from "./ConfigPanel";
 import { generatePassphrase } from "../lib/passphrase";
-import {
-  DEFAULT_WORDS,
-  MAX_WORDS,
-  MIN_WORDS,
-  TemperatureModes,
-  TemperatureValues,
-} from "../lib/config";
-
-interface PassphraseConfig {
-  wordCount: number;
-  temperature: TemperatureModes;
-}
+import { DEFAULT_WORDS, TemperatureValues } from "../lib/config";
 
 const Content = () => {
   const [currentPassphrase, setCurrentPassphrase] = useState<string | null>(
@@ -60,20 +38,8 @@ const Content = () => {
     }
   };
 
-  const handleWordCountChange = (nextWordCount: number) => {
-    setPassphraseConfig((priorConfig) => ({
-      ...priorConfig,
-      wordCount: nextWordCount,
-    }));
-  };
-
-  const handleTemperatureChange = (nextTemperature: string) => {
-    // Safe to assert here as we're only passing stringified values from the type
-    const nextTemperatureAsNumber = Number(nextTemperature) as TemperatureModes;
-    setPassphraseConfig((priorConfig) => ({
-      ...priorConfig,
-      temperature: nextTemperatureAsNumber,
-    }));
+  const updateConfig = (patch: Partial<PassphraseConfig>) => {
+    setPassphraseConfig((priorConfig) => ({ ...priorConfig, ...patch }));
   };
 
   return (
@@ -103,44 +69,11 @@ const Content = () => {
           monospace
         />
       )}
-      <Collapse
-        in={isConfigOpen}
-        transition={{ exit: { duration: 0.3 }, enter: { duration: 0.3 } }}
-      >
-        <Flex
-          direction="column"
-          align="flex-start"
-          marginTop="2rem"
-          padding={"0.5rem"}
-        >
-          <ConfigSlider
-            title="Word Count"
-            subtitle={<EntropyLabel wordCount={passphraseConfig.wordCount} />}
-            minValue={MIN_WORDS}
-            maxValue={MAX_WORDS}
-            step={1}
-            value={passphraseConfig.wordCount}
-            onChange={handleWordCountChange}
-          />
-          <Text fontSize={[".5rem", "1rem"]} marginBottom="0.5rem">
-            AI Mode
-          </Text>
-          <RadioGroup
-            name="AI Mode"
-            onChange={handleTemperatureChange}
-            value={`${passphraseConfig.temperature}`}
-          >
-            <Stack direction="column">
-              <Radio value={TemperatureValues[0].toString()} size="sm">
-                Standard
-              </Radio>
-              <Radio value={TemperatureValues[1].toString()} size="sm">
-                Matthew McConaughey
-              </Radio>
-            </Stack>
-          </RadioGroup>
-        </Flex>
-      </Collapse>
+      <ConfigPanel
+        isOpen={isConfigOpen}
+        config={passphraseConfig}
+        onChange={updateConfig}
+      />
       <ButtonGroup
         marginTop={["0.5rem", "1rem", "2rem"]}
         orientation="vertical"
