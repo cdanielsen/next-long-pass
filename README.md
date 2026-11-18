@@ -17,7 +17,8 @@ Passphrases:
 
 Backend:
 
-- Open AI integration via [Netlify functions](https://www.netlify.com/products/functions/)
+- `POST /api/mnemonic` [Netlify function](https://www.netlify.com/products/functions/) (`netlify/functions/mnemonic`) generates the AI mnemonic. The provider (currently OpenAI) is an implementation detail of the function.
+- `shared/` holds the request/response contract and limits used by both the frontend and the function
 
 ## Local Dev / Setup
 

@@ -3,7 +3,7 @@
  * See shared/passphrase.ts for import constraints.
  */
 
-export const MNEMONIC_ENDPOINT = "/api/openai";
+export const MNEMONIC_ENDPOINT = "/api/mnemonic";
 
 /** Style of the generated mnemonic. */
 export const AI_MODES = ["standard", "mcconaughey"] as const;

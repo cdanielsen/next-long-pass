@@ -42,7 +42,7 @@ describe("fetchMnemonic", () => {
     await expect(fetchMnemonic(REQUEST, controller.signal)).resolves.toBe(
       "A mnemonic.",
     );
-    expect(fetchMock).toHaveBeenCalledWith("/api/openai", {
+    expect(fetchMock).toHaveBeenCalledWith("/api/mnemonic", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(REQUEST),

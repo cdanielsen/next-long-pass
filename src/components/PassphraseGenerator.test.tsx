@@ -92,7 +92,7 @@ describe("PassphraseGenerator", () => {
     const passphrase = shownPassphrase();
     expect(passphrase.split(" ")).toHaveLength(DEFAULT_WORDS);
     expect(requestBodies()).toEqual([{ passphrase, mode: "standard" }]);
-    expect(fetchMock.mock.calls[0][0]).toBe("/api/openai");
+    expect(fetchMock.mock.calls[0][0]).toBe("/api/mnemonic");
 
     expect(
       await screen.findByLabelText(

@@ -6,7 +6,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 
-import { MnemonicError } from "../clients/openai";
+import { MnemonicError } from "../clients/mnemonic";
 
 interface MnemonicErrorAlertProps {
   error: Error;

@@ -4,7 +4,7 @@ import { IconType } from "react-icons";
 import { GiRobotAntennas, GiHouseKeys } from "react-icons/gi";
 
 import PhraseRow from "./PhraseRow";
-import { useMnemonic } from "../clients/openai";
+import { useMnemonic } from "../clients/mnemonic";
 import MnemonicErrorAlert from "./MnemonicErrorAlert";
 import ConfigPanel, { type PassphraseConfig } from "./ConfigPanel";
 import GeneratorActions from "./GeneratorActions";

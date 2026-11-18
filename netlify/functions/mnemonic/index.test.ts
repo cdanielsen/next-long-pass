@@ -46,7 +46,7 @@ afterEach(() => {
   create.mockReset();
 });
 
-describe("openai function", () => {
+describe("mnemonic function", () => {
   it("returns the trimmed mnemonic on success", async () => {
     const res = await invoke(VALID);
     expect(res).toEqual({
