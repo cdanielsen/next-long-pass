@@ -22,7 +22,8 @@ interface RequestBody {
   mode: string;
 }
 
-const fetchMock = vi.fn<[string, RequestInit], Promise<Response>>();
+const fetchMock =
+  vi.fn<(url: string, init: RequestInit) => Promise<Response>>();
 
 const jsonResponse = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), {
