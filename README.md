@@ -1,5 +1,7 @@
 # You Need a Passphrase
 
+[![CI](https://github.com/cdanielsen/next-long-pass/actions/workflows/ci.yml/badge.svg)](https://github.com/cdanielsen/next-long-pass/actions/workflows/ci.yml)
+
 An app for generating a good long passphrase with an AI generated mnemonic to remember it.
 
 ## Tech Stack
@@ -55,3 +57,11 @@ Run unit tests
 ```sh
 npm test
 ```
+
+Run everything CI runs (lint, typecheck, tests, build, function bundle check)
+
+```sh
+npm run ci
+```
+
+Node version is pinned in `.nvmrc` (used by CI and Netlify); `nvm use` picks it up locally.
