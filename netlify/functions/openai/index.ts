@@ -46,11 +46,11 @@ const handler: Handler = async (event) => {
   if (!validation.ok) {
     return json(400, { error: validation.error });
   }
-  const { words, temperature } = validation.value;
+  const { words, mode } = validation.value;
   const model = process.env.OPENAI_MODEL ?? DEFAULT_MODEL;
 
   if (process.env.MOCK_AI === "true") {
-    return json(200, { message: mockMnemonic(words, temperature) });
+    return json(200, { message: mockMnemonic(words, mode) });
   }
 
   const apiKey = process.env.OPEN_AI_KEY;
@@ -61,7 +61,7 @@ const handler: Handler = async (event) => {
 
   try {
     const completion = await getClient(apiKey).chat.completions.create({
-      messages: buildMessages(words, temperature),
+      messages: buildMessages(words, mode),
       model,
       // openai@4 types predate "none" (the API accepts it). Drop the cast
       // once the SDK is upgraded to a major version that types it.

@@ -62,11 +62,11 @@ describe("useMnemonic", () => {
 
     let pending!: Promise<void>;
     act(() => {
-      pending = result.current.generate("apple bring crane", 0.5);
+      pending = result.current.generate("apple bring crane", "standard");
     });
     expect(result.current.isLoading).toBe(true);
     expect(fetchMnemonic).toHaveBeenCalledWith(
-      { passphrase: "apple bring crane", temperature: 0.5 },
+      { passphrase: "apple bring crane", mode: "standard" },
       expect.any(AbortSignal),
     );
 
@@ -84,12 +84,12 @@ describe("useMnemonic", () => {
   it("clears the previous mnemonic when a new request starts", async () => {
     fetchMnemonic.mockResolvedValueOnce("First.");
     const { result } = renderHook(() => useMnemonic());
-    await act(() => result.current.generate("apple bring crane", 0.5));
+    await act(() => result.current.generate("apple bring crane", "standard"));
     expect(result.current.mnemonic).toBe("First.");
 
     fetchMnemonic.mockReturnValueOnce(deferred<string>().promise);
     act(() => {
-      void result.current.generate("delta echo fox", 0.5);
+      void result.current.generate("delta echo fox", "standard");
     });
     expect(result.current.mnemonic).toBeNull();
     expect(result.current.isLoading).toBe(true);
@@ -106,10 +106,10 @@ describe("useMnemonic", () => {
     let p1!: Promise<void>;
     let p2!: Promise<void>;
     act(() => {
-      p1 = result.current.generate("apple bring crane", 0.5);
+      p1 = result.current.generate("apple bring crane", "standard");
     });
     act(() => {
-      p2 = result.current.generate("delta echo fox", 0.5);
+      p2 = result.current.generate("delta echo fox", "standard");
     });
 
     expect(fetchMnemonic.mock.calls[0][1]?.aborted).toBe(true);
@@ -140,9 +140,9 @@ describe("useMnemonic", () => {
 
     let p1!: Promise<void>;
     act(() => {
-      p1 = result.current.generate("apple bring crane", 0.5);
+      p1 = result.current.generate("apple bring crane", "standard");
     });
-    await act(() => result.current.generate("delta echo fox", 0.5));
+    await act(() => result.current.generate("delta echo fox", "standard"));
     await act(() => p1);
 
     expect(result.current.error).toBeNull();
@@ -154,14 +154,14 @@ describe("useMnemonic", () => {
       new MnemonicError("AI provider request failed", 502),
     );
     const { result } = renderHook(() => useMnemonic());
-    await act(() => result.current.generate("apple bring crane", 0.5));
+    await act(() => result.current.generate("apple bring crane", "standard"));
 
     expect(result.current.error?.message).toBe("AI provider request failed");
     expect(result.current.isLoading).toBe(false);
 
     fetchMnemonic.mockReturnValueOnce(deferred<string>().promise);
     act(() => {
-      void result.current.generate("apple bring crane", 0.5);
+      void result.current.generate("apple bring crane", "standard");
     });
     expect(result.current.error).toBeNull();
   });
@@ -170,7 +170,7 @@ describe("useMnemonic", () => {
     fetchMnemonic.mockReturnValue(deferred<string>().promise);
     const { result, unmount } = renderHook(() => useMnemonic());
     act(() => {
-      void result.current.generate("apple bring crane", 0.5);
+      void result.current.generate("apple bring crane", "standard");
     });
 
     unmount();

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { MnemonicError, fetchMnemonic } from "./api";
 
-const REQUEST = { passphrase: "apple bring crane", temperature: 0.5 } as const;
+const REQUEST = { passphrase: "apple bring crane", mode: "standard" } as const;
 
 const stubFetch = (response: Response | Error) => {
   const fetchMock = vi.fn(() =>

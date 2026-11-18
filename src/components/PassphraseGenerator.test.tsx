@@ -18,7 +18,7 @@ vi.mock("typewriter-effect", () => ({ default: () => null }));
 
 interface RequestBody {
   passphrase: string;
-  temperature: number;
+  mode: string;
 }
 
 const fetchMock = vi.fn<[string, RequestInit], Promise<Response>>();
@@ -91,7 +91,7 @@ describe("PassphraseGenerator", () => {
 
     const passphrase = shownPassphrase();
     expect(passphrase.split(" ")).toHaveLength(DEFAULT_WORDS);
-    expect(requestBodies()).toEqual([{ passphrase, temperature: 0.5 }]);
+    expect(requestBodies()).toEqual([{ passphrase, mode: "standard" }]);
     expect(fetchMock.mock.calls[0][0]).toBe("/api/openai");
 
     expect(
@@ -123,7 +123,7 @@ describe("PassphraseGenerator", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Generate a new passphrase" }),
     );
-    expect(requestBodies()[0].temperature).toBe(1.5);
+    expect(requestBodies()[0].mode).toBe("mcconaughey");
   });
 
   it("uses the word count slider for the next passphrase and entropy label", async () => {

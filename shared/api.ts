@@ -5,12 +5,17 @@
 
 export const MNEMONIC_ENDPOINT = "/api/openai";
 
-export const TemperatureValues = [0.5, 1.5] as const;
-export type TemperatureModes = (typeof TemperatureValues)[number];
+/** Style of the generated mnemonic. */
+export const AI_MODES = ["standard", "mcconaughey"] as const;
+export type AiMode = (typeof AI_MODES)[number];
+export const DEFAULT_AI_MODE: AiMode = "standard";
+
+export const isAiMode = (value: unknown): value is AiMode =>
+  (AI_MODES as readonly unknown[]).includes(value);
 
 export interface MnemonicRequest {
   passphrase: string;
-  temperature: TemperatureModes;
+  mode: AiMode;
 }
 
 export interface MnemonicSuccess {

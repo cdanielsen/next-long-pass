@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { TemperatureModes } from "../../../shared/api";
+import type { AiMode } from "../../../shared/api";
 import { fetchMnemonic } from "./api";
 
 /**
@@ -19,36 +19,30 @@ export const useMnemonic = () => {
 
   useEffect(() => () => controllerRef.current?.abort(), []);
 
-  const generate = useCallback(
-    async (passphrase: string, temperature: TemperatureModes) => {
-      controllerRef.current?.abort();
-      const controller = new AbortController();
-      controllerRef.current = controller;
+  const generate = useCallback(async (passphrase: string, mode: AiMode) => {
+    controllerRef.current?.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
 
-      setMnemonic(null);
-      setError(null);
-      setIsLoading(true);
+    setMnemonic(null);
+    setError(null);
+    setIsLoading(true);
 
-      try {
-        const next = await fetchMnemonic(
-          { passphrase, temperature },
-          controller.signal,
-        );
-        // Superseded by a newer call (or unmounted) while awaiting
-        if (controller.signal.aborted) return;
-        setMnemonic(next);
-      } catch (e) {
-        if (controller.signal.aborted) return;
-        console.error(e);
-        setError(e instanceof Error ? e : new Error(String(e)));
-      } finally {
-        if (controllerRef.current === controller) {
-          setIsLoading(false);
-        }
+    try {
+      const next = await fetchMnemonic({ passphrase, mode }, controller.signal);
+      // Superseded by a newer call (or unmounted) while awaiting
+      if (controller.signal.aborted) return;
+      setMnemonic(next);
+    } catch (e) {
+      if (controller.signal.aborted) return;
+      console.error(e);
+      setError(e instanceof Error ? e : new Error(String(e)));
+    } finally {
+      if (controllerRef.current === controller) {
+        setIsLoading(false);
       }
-    },
-    [],
-  );
+    }
+  }, []);
 
   return { mnemonic, error, isLoading, generate };
 };

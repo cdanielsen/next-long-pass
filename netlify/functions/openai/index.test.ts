@@ -13,7 +13,7 @@ vi.mock("openai", () => ({
 
 const { handler } = await import("./index");
 
-const VALID = { passphrase: "apple bring crane dozen", temperature: 0.5 };
+const VALID = { passphrase: "apple bring crane dozen", mode: "standard" };
 
 const invoke = async (
   body: unknown,
@@ -66,21 +66,18 @@ describe("openai function", () => {
   });
 
   it.each([
-    [0.5, /clear and memorable/],
-    [1.5, /McConaughey/],
-  ])(
-    "expresses AI mode %s in the system prompt",
-    async (temperature, style) => {
-      await invoke({ ...VALID, temperature });
-      const [system, user] = create.mock.lastCall?.[0].messages ?? [];
-      expect(system.role).toBe("system");
-      expect(system.content).toMatch(style);
-      expect(user).toEqual({
-        role: "user",
-        content: "apple, bring, crane, dozen",
-      });
-    },
-  );
+    ["standard", /clear and memorable/],
+    ["mcconaughey", /McConaughey/],
+  ])("expresses AI mode %s in the system prompt", async (mode, style) => {
+    await invoke({ ...VALID, mode });
+    const [system, user] = create.mock.lastCall?.[0].messages ?? [];
+    expect(system.role).toBe("system");
+    expect(system.content).toMatch(style);
+    expect(user).toEqual({
+      role: "user",
+      content: "apple, bring, crane, dozen",
+    });
+  });
 
   it("uses OPENAI_MODEL when set", async () => {
     vi.stubEnv("OPENAI_MODEL", "gpt-6-sol");
@@ -107,7 +104,7 @@ describe("openai function", () => {
 
   it.each([
     ["non-object body", "hello"],
-    ["missing passphrase", { temperature: 0.5 }],
+    ["missing passphrase", { mode: "standard" }],
     ["too few words", { ...VALID, passphrase: "apple bring" }],
     [
       "too many words",
@@ -121,7 +118,7 @@ describe("openai function", () => {
       "overlong word",
       { ...VALID, passphrase: "apple bring supercalifragilistic" },
     ],
-    ["unsupported temperature", { ...VALID, temperature: 2 }],
+    ["unsupported mode", { ...VALID, mode: "pirate" }],
   ])("returns 400 for %s", async (_, body) => {
     const res = await invoke(body);
     expect(res.status).toBe(400);
@@ -164,12 +161,12 @@ describe("openai function", () => {
     });
 
     it("varies by AI mode", async () => {
-      const res = await invoke({ ...VALID, temperature: 1.5 });
+      const res = await invoke({ ...VALID, mode: "mcconaughey" });
       expect(res.body.message).toMatch(/^\[mock\] Alright, alright, alright/);
     });
 
     it("still validates input", async () => {
-      const res = await invoke({ ...VALID, temperature: 2 });
+      const res = await invoke({ ...VALID, mode: "pirate" });
       expect(res.status).toBe(400);
     });
   });
