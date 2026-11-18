@@ -19,7 +19,7 @@ import { IconType } from "react-icons";
 import { GiRobotAntennas, GiHouseKeys, GiCog } from "react-icons/gi";
 
 import TypedPhrase from "./TypedPhrase";
-import { useMnemonic } from "../clients/openai";
+import { MnemonicError, useMnemonic } from "../clients/openai";
 import CopyButton from "./CopyButton";
 import ConfigSlider from "./ConfigSlider";
 import EntropyLabel from "./EntropyLabel";
@@ -121,7 +121,9 @@ const Content = () => {
               Error generating mnemonic.
             </AlertTitle>
             <AlertDescription fontSize={["0.5rem", "0.75rem"]}>
-              Please try again later
+              {error instanceof MnemonicError
+                ? `${error.message}. Please try again.`
+                : "Please try again later"}
             </AlertDescription>
           </Flex>
         </Alert>
