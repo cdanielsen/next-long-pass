@@ -50,7 +50,7 @@ Launch the netlify dev server (proxies Vite frontend dev server while also servi
 npm run dev
 ```
 
-Dev environment runs at localhost:8888 by default
+Dev environment runs at localhost:8888 by default. `netlify dev` reads `.env` only at startup, so restart it after changing env vars.
 
 Run unit tests
 
