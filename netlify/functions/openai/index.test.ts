@@ -1,7 +1,7 @@
 import type { HandlerContext, HandlerEvent } from "@netlify/functions";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const create = vi.fn();
+const create = vi.fn<[Record<string, unknown>], Promise<unknown>>();
 
 vi.mock("openai", () => ({
   default: vi.fn(() => ({ chat: { completions: { create } } })),
@@ -51,7 +51,21 @@ describe("openai function", () => {
     });
     expect(create).toHaveBeenCalledOnce();
     expect(create).toHaveBeenCalledWith(
-      expect.objectContaining({ temperature: 0.5 }),
+      expect.objectContaining({
+        model: "gpt-6-luna",
+        reasoning_effort: "none",
+        max_completion_tokens: 120,
+      }),
+    );
+    // Reasoning models reject non-default temperatures
+    expect(create.mock.lastCall?.[0]).not.toHaveProperty("temperature");
+  });
+
+  it("uses OPENAI_MODEL when set", async () => {
+    vi.stubEnv("OPENAI_MODEL", "gpt-6-sol");
+    await invoke(VALID);
+    expect(create).toHaveBeenCalledWith(
+      expect.objectContaining({ model: "gpt-6-sol" }),
     );
   });
 

@@ -35,10 +35,11 @@ Create a local env file
 cp .env.example .env
 ```
 
-| Variable      | Purpose                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------- |
-| `OPEN_AI_KEY` | OpenAI API key. Use a Restricted project key with only **Model capabilities: Write**.          |
-| `MOCK_AI`     | `true` returns canned mnemonics without calling OpenAI (default for local dev). Unset in prod. |
+| Variable       | Purpose                                                                                        |
+| -------------- | ---------------------------------------------------------------------------------------------- |
+| `OPEN_AI_KEY`  | OpenAI API key. Use a Restricted project key with only **Model capabilities: Write**.          |
+| `OPENAI_MODEL` | Optional model override (default `gpt-6-luna`). Must accept `reasoning_effort: "none"`.        |
+| `MOCK_AI`      | `true` returns canned mnemonics without calling OpenAI (default for local dev). Unset in prod. |
 
 Launch the netlify dev server (proxies Vite frontend dev server while also serving Netlify function locally)
 
