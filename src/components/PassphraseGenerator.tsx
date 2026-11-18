@@ -11,7 +11,7 @@ import GeneratorActions from "./GeneratorActions";
 import { generatePassphrase } from "../lib/passphrase";
 import { DEFAULT_WORDS, TemperatureValues } from "../lib/config";
 
-const Content = () => {
+const PassphraseGenerator = () => {
   const [currentPassphrase, setCurrentPassphrase] = useState<string | null>(
     null,
   );
@@ -86,4 +86,4 @@ const Content = () => {
   );
 };
 
-export default Content;
+export default PassphraseGenerator;

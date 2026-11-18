@@ -9,7 +9,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import Content from "./Content";
+import PassphraseGenerator from "./PassphraseGenerator";
 import { DEFAULT_WORDS } from "../lib/config";
 
 // The typing animation is timer-driven noise in jsdom; phrases are asserted
@@ -34,10 +34,10 @@ const requestBodies = () =>
     ([, init]) => JSON.parse(init.body as string) as RequestBody,
   );
 
-const renderContent = () =>
+const renderGenerator = () =>
   render(
     <ChakraProvider>
-      <Content />
+      <PassphraseGenerator />
     </ChakraProvider>,
   );
 
@@ -80,9 +80,9 @@ afterEach(() => {
   fetchMock.mockReset();
 });
 
-describe("Content (characterization)", () => {
+describe("PassphraseGenerator", () => {
   it("generates a passphrase and its mnemonic on click", async () => {
-    renderContent();
+    renderGenerator();
     expect(fetchMock).not.toHaveBeenCalled();
 
     fireEvent.click(
@@ -110,7 +110,7 @@ describe("Content (characterization)", () => {
   });
 
   it("applies AI mode on the next click without requesting on change", async () => {
-    renderContent();
+    renderGenerator();
     fireEvent.click(
       screen.getByRole("button", { name: "Passphrase configuration" }),
     );
@@ -127,7 +127,7 @@ describe("Content (characterization)", () => {
   });
 
   it("uses the word count slider for the next passphrase and entropy label", async () => {
-    renderContent();
+    renderGenerator();
     fireEvent.click(
       screen.getByRole("button", { name: "Passphrase configuration" }),
     );
@@ -145,7 +145,7 @@ describe("Content (characterization)", () => {
   });
 
   it("regenerates the mnemonic for the same passphrase", async () => {
-    renderContent();
+    renderGenerator();
     expect(
       screen.queryByRole("button", { name: "Regenerate the AI mnemonic" }),
     ).toBeNull();
@@ -170,7 +170,7 @@ describe("Content (characterization)", () => {
     fetchMock.mockResolvedValue(
       jsonResponse(502, { error: "AI provider request failed" }),
     );
-    renderContent();
+    renderGenerator();
 
     fireEvent.click(
       screen.getByRole("button", { name: "Generate a new passphrase" }),
