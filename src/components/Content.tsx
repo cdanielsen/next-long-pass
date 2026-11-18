@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Button, ButtonGroup, Flex, IconButton } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { IconType } from "react-icons";
-import { GiRobotAntennas, GiHouseKeys, GiCog } from "react-icons/gi";
+import { GiRobotAntennas, GiHouseKeys } from "react-icons/gi";
 
 import PhraseRow from "./PhraseRow";
 import { useMnemonic } from "../clients/openai";
 import MnemonicErrorAlert from "./MnemonicErrorAlert";
 import ConfigPanel, { type PassphraseConfig } from "./ConfigPanel";
+import GeneratorActions from "./GeneratorActions";
 import { generatePassphrase } from "../lib/passphrase";
 import { DEFAULT_WORDS, TemperatureValues } from "../lib/config";
 
@@ -74,48 +75,13 @@ const Content = () => {
         config={passphraseConfig}
         onChange={updateConfig}
       />
-      <ButtonGroup
-        marginTop={["0.5rem", "1rem", "2rem"]}
-        orientation="vertical"
-        alignItems="flex-start"
-        width="fit-content"
-      >
-        <ButtonGroup
-          isAttached
-          orientation="horizontal"
-          alignItems="center"
-          width="100%"
-        >
-          <Button
-            colorScheme="red"
-            onClick={handleNewPassphrase}
-            size={["xs", "sm", "md"]}
-            aria-label="Generate a new passphrase"
-            width="100%"
-          >
-            {`Make me ${!currentPassphrase ? "one" : "another"}`}
-          </Button>
-          <IconButton
-            colorScheme="red"
-            variant={"outline"}
-            size={["xs", "sm", "md"]}
-            aria-label="Passphrase configuration"
-            onClick={toggleConfig}
-            icon={<GiCog />}
-          />
-        </ButtonGroup>
-        {currentPassphrase && (
-          <Button
-            colorScheme="blue"
-            isLoading={isLoading}
-            size={["xs", "sm", "md"]}
-            aria-label="Regenerate the AI mnemonic"
-            onClick={handleRegenerateMnemonic}
-          >
-            Regenerate AI mnemonic
-          </Button>
-        )}
-      </ButtonGroup>
+      <GeneratorActions
+        hasPassphrase={currentPassphrase !== null}
+        isLoading={isLoading}
+        onNewPassphrase={handleNewPassphrase}
+        onRegenerate={handleRegenerateMnemonic}
+        onToggleConfig={toggleConfig}
+      />
     </Flex>
   );
 };
