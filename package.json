@@ -14,7 +14,10 @@
     "format": "prettier . --write --ignore-unknown",
     "preview": "vite preview",
     "prepare": "husky install",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "check:functions": "esbuild netlify/functions/mnemonic/index.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/fn-check/index.mjs --log-level=warning",
+    "ci": "npm run lint && npm run typecheck && npm test && npm run client:build && npm run check:functions"
   },
   "lint-staged": {
     "**/*.ts*": [
@@ -46,6 +49,7 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react": "^4.0.3",
+    "esbuild": "0.18.20",
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-react": "^7.33.2",
