@@ -1,9 +1,5 @@
 import { useState } from "react";
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Button,
   ButtonGroup,
   Collapse,
@@ -18,7 +14,8 @@ import { IconType } from "react-icons";
 import { GiRobotAntennas, GiHouseKeys, GiCog } from "react-icons/gi";
 
 import PhraseRow from "./PhraseRow";
-import { MnemonicError, useMnemonic } from "../clients/openai";
+import { useMnemonic } from "../clients/openai";
+import MnemonicErrorAlert from "./MnemonicErrorAlert";
 import ConfigSlider from "./ConfigSlider";
 import EntropyLabel from "./EntropyLabel";
 import { generatePassphrase } from "../lib/passphrase";
@@ -95,21 +92,7 @@ const Content = () => {
           copyLabel="Copy passphrase"
         />
       )}
-      {error && (
-        <Alert status="error" margin="0.5rem 0">
-          <AlertIcon />
-          <Flex direction="column">
-            <AlertTitle fontSize={["0.5rem", "0.75rem"]}>
-              Error generating mnemonic.
-            </AlertTitle>
-            <AlertDescription fontSize={["0.5rem", "0.75rem"]}>
-              {error instanceof MnemonicError
-                ? `${error.message}. Please try again.`
-                : "Please try again later"}
-            </AlertDescription>
-          </Flex>
-        </Alert>
-      )}
+      {error && <MnemonicErrorAlert error={error} />}
       {!error && mnemonic && (
         <PhraseRow
           icon={GiRobotAntennas as IconType}
