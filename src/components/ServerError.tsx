@@ -1,10 +1,10 @@
 import { Flex, Text } from "@chakra-ui/react";
 
-export default function Error() {
+export default function ServerError() {
   return (
     <Flex
       direction="column"
-      id="NotFound"
+      id="ServerError"
       justify="center"
       align="center"
       height="100%"

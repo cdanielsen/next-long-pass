@@ -15,7 +15,7 @@ const labelStyles = (idx: number) => ({
   marginTop: "3",
   // Very weird but the initial mark is off w/out this
   marginLeft: idx ? "-2" : "0",
-  fontSize: [".5rem", "1rem"],
+  fontSize: [".75rem", "1rem"],
 });
 
 interface ConfigSliderProps {
@@ -53,7 +53,7 @@ const ConfigSlider = ({
       });
   return (
     <>
-      <Text fontSize={[".5rem", "1rem"]} marginBottom="0.5rem">
+      <Text fontSize={[".75rem", "1rem"]} marginBottom="0.5rem">
         {title}
         {subtitle}
       </Text>
