@@ -22,6 +22,7 @@ import TypedPhrase from "./TypedPhrase";
 import { useDescription } from "../clients/openai";
 import CopyButton from "./CopyButton";
 import ConfigSlider from "./ConfigSlider";
+import EntropyLabel from "./EntropyLabel";
 import { generatePassphrase } from "../lib/passphrase";
 
 const TemperatureValues = [0.5, 1.5] as const;
@@ -153,6 +154,7 @@ const Content = () => {
         >
           <ConfigSlider
             title="Word Count"
+            subtitle={<EntropyLabel wordCount={passphraseConfig.wordCount} />}
             minValue={3}
             maxValue={10}
             step={1}
