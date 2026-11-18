@@ -49,7 +49,7 @@ const shownPassphrase = () => {
     .getByLabelText(/^A set of random words/)
     .getAttribute("aria-label");
   const match = /"(.+)"/.exec(label ?? "");
-  if (!match) throw new Error(`Unexpected passphrase label: ${label}`);
+  if (!match) throw new Error(`Unexpected passphrase label: ${String(label)}`);
   return match[1];
 };
 

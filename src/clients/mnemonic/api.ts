@@ -19,9 +19,9 @@ export class MnemonicError extends Error {
 }
 
 /** The response JSON is untrusted: same keys as MnemonicResponse, unknown values. */
-type UntrustedBody = {
-  [K in keyof MnemonicSuccess | keyof MnemonicFailure]?: unknown;
-};
+type UntrustedBody = Partial<
+  Record<keyof MnemonicSuccess | keyof MnemonicFailure, unknown>
+>;
 
 /**
  * Request a mnemonic for `passphrase`. Throws `MnemonicError` for non-OK
