@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import type { Handler, HandlerResponse } from "@netlify/functions";
 import { validateRequest } from "./validate";
+import { mockMnemonic } from "./mock";
 
 type ResponseBody = { message: string } | { error: string };
 
@@ -34,6 +35,10 @@ const handler: Handler = async (event) => {
     return json(400, { error: validation.error });
   }
   const { words, temperature } = validation.value;
+
+  if (process.env.MOCK_AI === "true") {
+    return json(200, { message: mockMnemonic(words, temperature) });
+  }
 
   const apiKey = process.env.OPEN_AI_KEY;
   if (!apiKey) {

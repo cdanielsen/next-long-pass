@@ -29,6 +29,17 @@ Install dependencies
 npm install
 ```
 
+Create a local env file
+
+```sh
+cp .env.example .env
+```
+
+| Variable      | Purpose                                                                                        |
+| ------------- | ---------------------------------------------------------------------------------------------- |
+| `OPEN_AI_KEY` | OpenAI API key. Use a Restricted project key with only **Model capabilities: Write**.          |
+| `MOCK_AI`     | `true` returns canned mnemonics without calling OpenAI (default for local dev). Unset in prod. |
+
 Launch the netlify dev server (proxies Vite frontend dev server while also serving Netlify function locally)
 
 ```sh
