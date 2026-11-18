@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { TemperatureModes } from "../../components/Content";
+import type { TemperatureModes } from "../../lib/config";
 
 interface PassphraseResponse {
   message: string;

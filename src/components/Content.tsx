@@ -24,9 +24,13 @@ import CopyButton from "./CopyButton";
 import ConfigSlider from "./ConfigSlider";
 import EntropyLabel from "./EntropyLabel";
 import { generatePassphrase } from "../lib/passphrase";
-
-const TemperatureValues = [0.5, 1.5] as const;
-export type TemperatureModes = (typeof TemperatureValues)[number];
+import {
+  DEFAULT_WORDS,
+  MAX_WORDS,
+  MIN_WORDS,
+  TemperatureModes,
+  TemperatureValues,
+} from "../lib/config";
 
 interface PassphraseConfig {
   wordCount: number;
@@ -39,7 +43,7 @@ const Content = () => {
   );
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [passphraseConfig, setPassphraseConfig] = useState<PassphraseConfig>({
-    wordCount: 5,
+    wordCount: DEFAULT_WORDS,
     temperature: TemperatureValues[0],
   });
 
@@ -155,8 +159,8 @@ const Content = () => {
           <ConfigSlider
             title="Word Count"
             subtitle={<EntropyLabel wordCount={passphraseConfig.wordCount} />}
-            minValue={3}
-            maxValue={6}
+            minValue={MIN_WORDS}
+            maxValue={MAX_WORDS}
             step={1}
             value={passphraseConfig.wordCount}
             onChange={handleWordCountChange}
