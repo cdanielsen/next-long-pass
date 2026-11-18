@@ -63,7 +63,7 @@ describe("secureRandomInt", () => {
 
 describe("generatePassphrase", () => {
   it("returns the requested number of words from the list", () => {
-    for (const count of [3, 6, 10]) {
+    for (const count of [3, 6, 7]) {
       const words = generatePassphrase(count).split(" ");
       expect(words).toHaveLength(count);
       for (const word of words) {

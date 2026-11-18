@@ -156,7 +156,7 @@ const Content = () => {
             title="Word Count"
             subtitle={<EntropyLabel wordCount={passphraseConfig.wordCount} />}
             minValue={3}
-            maxValue={10}
+            maxValue={7}
             step={1}
             value={passphraseConfig.wordCount}
             onChange={handleWordCountChange}
