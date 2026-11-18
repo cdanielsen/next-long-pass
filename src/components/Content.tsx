@@ -15,7 +15,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { generate } from "random-words";
 import { IconType } from "react-icons";
 import { GiRobotAntennas, GiHouseKeys, GiCog } from "react-icons/gi";
 
@@ -23,12 +22,12 @@ import TypedPhrase from "./TypedPhrase";
 import { useDescription } from "../clients/openai";
 import CopyButton from "./CopyButton";
 import ConfigSlider from "./ConfigSlider";
+import { generatePassphrase } from "../lib/passphrase";
 
 const TemperatureValues = [0.5, 1.5] as const;
 export type TemperatureModes = (typeof TemperatureValues)[number];
 
 interface PassphraseConfig {
-  maxLength: number;
   wordCount: number;
   temperature: TemperatureModes;
 }
@@ -39,8 +38,7 @@ const Content = () => {
   );
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [passphraseConfig, setPassphraseConfig] = useState<PassphraseConfig>({
-    maxLength: 5,
-    wordCount: 4,
+    wordCount: 6,
     temperature: TemperatureValues[0],
   });
 
@@ -48,27 +46,14 @@ const Content = () => {
     setIsConfigOpen((openState) => !openState);
   };
 
-  const updatePassphrase = ({ maxLength, wordCount }: PassphraseConfig) => {
-    const nextPassphrase = generate({
-      minLength: 3,
-      maxLength,
-      exactly: wordCount,
-      join: " ",
-    });
-    setCurrentPassphrase(nextPassphrase);
+  const updatePassphrase = ({ wordCount }: PassphraseConfig) => {
+    setCurrentPassphrase(generatePassphrase(wordCount));
   };
 
   const { description, isLoading, isError, refetch } = useDescription(
     currentPassphrase,
     passphraseConfig.temperature,
   );
-
-  const handleMaxLengthChange = (nextMaxLength: number) => {
-    setPassphraseConfig((priorConfig) => ({
-      ...priorConfig,
-      maxLength: nextMaxLength,
-    }));
-  };
 
   const handleWordCountChange = (nextWordCount: number) => {
     setPassphraseConfig((priorConfig) => ({
@@ -167,17 +152,9 @@ const Content = () => {
           padding={"0.5rem"}
         >
           <ConfigSlider
-            title="Max Word Length"
-            minValue={3}
-            maxValue={5}
-            step={1}
-            value={passphraseConfig.maxLength}
-            onChange={handleMaxLengthChange}
-          />
-          <ConfigSlider
             title="Word Count"
             minValue={3}
-            maxValue={5}
+            maxValue={10}
             step={1}
             value={passphraseConfig.wordCount}
             onChange={handleWordCountChange}
