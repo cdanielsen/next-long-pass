@@ -28,7 +28,7 @@ const About = () => {
           color="blue.500"
           _hover={{ textDecoration: "none" }}
         >
-          EFF short wordlist
+          EFF large wordlist
         </Link>{" "}
         (CC BY 3.0 US)
       </Text>

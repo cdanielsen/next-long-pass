@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { EFF_SHORT_WORDLIST } from "./wordlist";
+import { EFF_LARGE_WORDLIST } from "./wordlist";
 import {
   entropyBits,
   entropyStrength,
@@ -25,12 +25,12 @@ const stubRandomValues = (values: number[]) => {
     });
 };
 
-describe("EFF_SHORT_WORDLIST", () => {
-  it("has 1296 unique, short words", () => {
-    expect(EFF_SHORT_WORDLIST).toHaveLength(1296);
-    expect(new Set(EFF_SHORT_WORDLIST).size).toBe(1296);
-    for (const word of EFF_SHORT_WORDLIST) {
-      expect(word).toMatch(/^[a-z-]{3,5}$/);
+describe("EFF_LARGE_WORDLIST", () => {
+  it("has 7776 unique words of 3-9 characters", () => {
+    expect(EFF_LARGE_WORDLIST).toHaveLength(7776);
+    expect(new Set(EFF_LARGE_WORDLIST).size).toBe(7776);
+    for (const word of EFF_LARGE_WORDLIST) {
+      expect(word).toMatch(/^[a-z-]{3,9}$/);
     }
   });
 });
@@ -63,11 +63,11 @@ describe("secureRandomInt", () => {
 
 describe("generatePassphrase", () => {
   it("returns the requested number of words from the list", () => {
-    for (const count of [3, 6, 7]) {
+    for (const count of [3, 5, 6]) {
       const words = generatePassphrase(count).split(" ");
       expect(words).toHaveLength(count);
       for (const word of words) {
-        expect(EFF_SHORT_WORDLIST).toContain(word);
+        expect(EFF_LARGE_WORDLIST).toContain(word);
       }
     }
   });
@@ -84,7 +84,7 @@ describe("entropy", () => {
   it("computes bits as wordCount * log2(poolSize)", () => {
     expect(entropyBits(1, 2)).toBe(1);
     expect(entropyBits(4, 1024)).toBe(40);
-    expect(entropyBits(6)).toBeCloseTo(62.04, 2);
+    expect(entropyBits(5)).toBeCloseTo(64.62, 2);
   });
 
   it("labels strength by threshold", () => {

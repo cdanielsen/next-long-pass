@@ -39,7 +39,7 @@ const Content = () => {
   );
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [passphraseConfig, setPassphraseConfig] = useState<PassphraseConfig>({
-    wordCount: 6,
+    wordCount: 5,
     temperature: TemperatureValues[0],
   });
 
@@ -156,7 +156,7 @@ const Content = () => {
             title="Word Count"
             subtitle={<EntropyLabel wordCount={passphraseConfig.wordCount} />}
             minValue={3}
-            maxValue={7}
+            maxValue={6}
             step={1}
             value={passphraseConfig.wordCount}
             onChange={handleWordCountChange}

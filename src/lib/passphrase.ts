@@ -1,4 +1,4 @@
-import { EFF_SHORT_WORDLIST } from "./wordlist";
+import { EFF_LARGE_WORDLIST } from "./wordlist";
 
 const UINT32_RANGE = 2 ** 32;
 
@@ -27,7 +27,7 @@ export const secureRandomInt = (max: number): number => {
 
 export const generatePassphrase = (
   wordCount: number,
-  wordlist: readonly string[] = EFF_SHORT_WORDLIST,
+  wordlist: readonly string[] = EFF_LARGE_WORDLIST,
 ): string =>
   Array.from(
     { length: wordCount },
@@ -37,7 +37,7 @@ export const generatePassphrase = (
 /** Bits of entropy for `wordCount` words drawn independently from the list. */
 export const entropyBits = (
   wordCount: number,
-  poolSize: number = EFF_SHORT_WORDLIST.length,
+  poolSize: number = EFF_LARGE_WORDLIST.length,
 ): number => wordCount * Math.log2(poolSize);
 
 export type EntropyStrength = "weak" | "fair" | "strong";

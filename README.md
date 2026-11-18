@@ -12,7 +12,7 @@ Frontend:
 
 Passphrases:
 
-- Words drawn from the [EFF Short Wordlist #1](https://www.eff.org/dice) (1,296 words, ~10.3 bits each), licensed [CC BY 3.0 US](https://creativecommons.org/licenses/by/3.0/us/)
+- Words drawn from the [EFF Large Wordlist](https://www.eff.org/dice) (7,776 words, ~12.9 bits each), licensed [CC BY 3.0 US](https://creativecommons.org/licenses/by/3.0/us/)
 - Selected with `crypto.getRandomValues` (rejection sampling, no modulo bias)
 
 Backend:
