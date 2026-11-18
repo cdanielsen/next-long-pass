@@ -1,14 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import type { TemperatureModes } from "../../lib/config";
+import { fetchMnemonic } from "./api";
 
-interface PassphraseResponse {
-  message: string;
-}
-
-export interface PassphraseRequest {
-  passphrase: string;
-  temperature: TemperatureModes;
-}
+export type { PassphraseRequest } from "./api";
 
 export const useDescription = (
   passphrase: string | null,
@@ -19,17 +13,15 @@ export const useDescription = (
   const [isError, setIsError] = useState(false);
 
   const fetchDescriptionData = useCallback(async () => {
+    if (!passphrase) {
+      return;
+    }
+
     setIsError(false);
     setIsLoading(true);
 
     try {
-      const result = await fetch("api/openai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ passphrase, temperature }),
-      }).then((response) => response.json() as Promise<PassphraseResponse>);
-
-      setDescription(result.message);
+      setDescription(await fetchMnemonic({ passphrase, temperature }));
     } catch (error) {
       console.error(error);
       setIsError(true);
@@ -38,12 +30,8 @@ export const useDescription = (
   }, [passphrase, temperature]);
 
   useEffect(() => {
-    if (!passphrase) {
-      return;
-    }
-
     void fetchDescriptionData();
-  }, [passphrase, fetchDescriptionData]);
+  }, [fetchDescriptionData]);
 
   const refetch = () => {
     void fetchDescriptionData();
