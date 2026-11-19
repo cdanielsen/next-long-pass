@@ -33,7 +33,7 @@
   --text-md: 0.9375rem; /* 15px: UI */
   --text-lg: 1.125rem; /* 18px: mnemonic */
   --text-title: clamp(1.375rem, 3.6vw, 2.25rem);
-  --text-word: clamp(1.75rem, 5vw, 3.25rem);
+  --text-word: clamp(1.5rem, 3.4vw, 2.25rem);
 
   /* Space, shape, motion */
   --gutter: clamp(16px, 4vw, 48px);
