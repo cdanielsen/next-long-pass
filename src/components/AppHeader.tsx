@@ -1,5 +1,6 @@
 import { Link, NavLink } from "react-router";
 
+import AccentPicker from "./AccentPicker";
 import { GitHubIcon } from "./icons";
 import styles from "./AppHeader.module.css";
 
@@ -27,6 +28,7 @@ const AppHeader = () => (
           </li>
         </ul>
       </nav>
+      <AccentPicker />
       <a
         href={REPO_URL}
         className={styles.iconLink}

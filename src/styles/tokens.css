@@ -52,6 +52,17 @@
   --content-max: 1200px;
 }
 
+/* Accent choices (see src/lib/accent.ts). Teal is the default above. */
+:root[data-accent="blue"] {
+  --color-accent: #2c4fa8;
+  --color-on-accent: #ffffff;
+}
+
+:root[data-accent="plum"] {
+  --color-accent: #7a3b88;
+  --color-on-accent: #ffffff;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
@@ -69,5 +80,17 @@
     --color-strong: #73cc93;
     --color-danger-bg: #3a1f18;
     --color-danger-ink: #f6c2b3;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-accent="blue"] {
+    --color-accent: #93aef5;
+    --color-on-accent: #0f1a33;
+  }
+
+  :root[data-accent="plum"] {
+    --color-accent: #d3a1e2;
+    --color-on-accent: #241029;
   }
 }
