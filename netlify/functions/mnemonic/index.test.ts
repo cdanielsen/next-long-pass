@@ -8,13 +8,16 @@ const create =
 
 // The handler calls `new OpenAI(...)`; Vitest 4+ only constructs mocks whose
 // implementation is a class or function, so mock with a class.
-vi.mock("openai", () => ({
+// Keep the real error classes so the handler's error mapping sees them.
+vi.mock("openai", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("openai")>()),
   default: class {
     chat = { completions: { create } };
   },
 }));
 
 const { default: handler, config } = await import("./index");
+const { APIError } = await import("openai");
 
 const VALID = { passphrase: "apple bring crane dozen", mode: "standard" };
 
@@ -147,13 +150,53 @@ describe("mnemonic function", () => {
     vi.stubEnv("OPEN_AI_KEY", "");
     const res = await invoke(VALID);
     expect(res.status).toBe(500);
+    expect(res.body.error).not.toMatch(/try again/i);
     expect(create).not.toHaveBeenCalled();
   });
 
-  it("returns 502 when OpenAI fails", async () => {
-    create.mockRejectedValue(new Error("model_not_found"));
+  it("returns 503 busy with Retry-After when OpenAI rate limits", async () => {
+    create.mockRejectedValue(
+      APIError.generate(
+        429,
+        { error: { code: "rate_limit_exceeded" } },
+        undefined,
+        new Headers({ "retry-after": "30" }),
+      ),
+    );
+    const res = await invoke(VALID);
+    expect(res.status).toBe(503);
+    expect(res.headers.get("Retry-After")).toBe("30");
+    expect(res.body.error).toMatch(/busy\. Try again in a minute/);
+  });
+
+  it("returns 503 unavailable without logging the upstream message", async () => {
+    const leaky = "Incorrect API key provided: sk-proj-****abcd";
+    create.mockRejectedValue(
+      APIError.generate(
+        401,
+        { error: { code: "invalid_api_key", message: leaky } },
+        undefined,
+        new Headers(),
+      ),
+    );
+    const res = await invoke(VALID);
+    expect(res.status).toBe(503);
+    expect(res.headers.get("Retry-After")).toBeNull();
+    expect(res.body.error).toBe("AI mnemonics are unavailable right now.");
+    expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain(
+      "sk-proj",
+    );
+    expect(console.error).toHaveBeenCalledWith(
+      "AI provider request failed",
+      expect.objectContaining({ status: 401, code: "invalid_api_key" }),
+    );
+  });
+
+  it("returns 502 when OpenAI fails unexpectedly", async () => {
+    create.mockRejectedValue(new Error("socket hang up"));
     const res = await invoke(VALID);
     expect(res.status).toBe(502);
+    expect(res.body.error).toMatch(/Please try again/);
   });
 
   it("returns 502 when OpenAI returns empty content", async () => {

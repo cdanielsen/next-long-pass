@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import type { Config } from "@netlify/functions";
 import type { MnemonicResponse } from "../../../shared/api";
+import { describeError, ERROR_MESSAGES, toErrorResponse } from "./errors";
 import { validateRequest } from "./validate";
 import { mockMnemonic } from "./mock";
 import { buildMessages } from "./prompt";
@@ -27,14 +28,14 @@ const getClient = (apiKey: string) => (client ??= new OpenAI({ apiKey }));
 
 export default async (req: Request): Promise<Response> => {
   if (req.method !== "POST") {
-    return json(405, { error: "Method not allowed" }, { Allow: "POST" });
+    return json(405, { error: "Method not allowed." }, { Allow: "POST" });
   }
 
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return json(400, { error: "Request body must be valid JSON" });
+    return json(400, { error: "Request body must be valid JSON." });
   }
 
   const validation = validateRequest(body);
@@ -51,7 +52,7 @@ export default async (req: Request): Promise<Response> => {
   const apiKey = process.env.OPEN_AI_KEY;
   if (!apiKey) {
     console.error("Missing required env variable OPEN_AI_KEY");
-    return json(500, { error: "Server is not configured" });
+    return json(500, { error: ERROR_MESSAGES.unavailable });
   }
 
   try {
@@ -64,13 +65,15 @@ export default async (req: Request): Promise<Response> => {
 
     const message = completion.choices[0]?.message.content?.trim();
     if (!message) {
-      return json(502, { error: "Empty response from AI provider" });
+      console.error("AI provider returned empty content");
+      return json(502, { error: ERROR_MESSAGES.failed });
     }
 
     return json(200, { message });
   } catch (error) {
-    console.error(error);
-    return json(502, { error: "AI provider request failed" });
+    console.error("AI provider request failed", describeError(error));
+    const { status, message, headers } = toErrorResponse(error);
+    return json(status, { error: message }, headers);
   }
 };
 
