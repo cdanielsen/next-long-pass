@@ -9,7 +9,7 @@ const AppHeader = () => (
   <header className={styles.header}>
     <h1 className={styles.title}>
       <Link to="/" className={styles.titleLink}>
-        You Need a Passphrase
+        Next Passphrase
       </Link>
     </h1>
     <div className={styles.end}>

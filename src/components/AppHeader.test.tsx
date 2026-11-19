@@ -17,9 +17,7 @@ const renderAt = (path: string) =>
 it("renders the app name as the only h1", () => {
   renderAt("/");
   expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
-  expect(
-    screen.getByRole("heading", { name: "You Need a Passphrase" }),
-  ).toBeTruthy();
+  expect(screen.getByRole("heading", { name: "Next Passphrase" })).toBeTruthy();
 });
 
 it.each([
