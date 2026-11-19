@@ -22,7 +22,7 @@ const AccentPicker = () => {
 
   return (
     <fieldset className={styles.picker}>
-      <legend className="visually-hidden">Accent color</legend>
+      <legend className="visually-hidden">Theme</legend>
       {ACCENTS.map((value) => (
         <label
           key={value}

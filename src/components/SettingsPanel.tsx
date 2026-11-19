@@ -94,7 +94,7 @@ const SettingsPanel = ({
       <div className={styles.row}>
         {/* The picker's own legend names it for screen readers */}
         <span className={styles.rowLabel} aria-hidden="true">
-          Accent
+          Theme
         </span>
         <AccentPicker />
       </div>
