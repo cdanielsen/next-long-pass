@@ -32,3 +32,12 @@ it.each([
   expect(active).toHaveLength(1);
   expect(active.item(0).textContent).toBe(current);
 });
+
+it("links to the source on GitHub", () => {
+  renderAt("/");
+  expect(
+    screen
+      .getByRole("link", { name: "Source code on GitHub" })
+      .getAttribute("href"),
+  ).toBe("https://github.com/cdanielsen/next-long-pass");
+});
