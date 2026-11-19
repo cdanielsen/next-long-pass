@@ -171,7 +171,7 @@ describe("PassphraseGenerator", () => {
 
   it("shows the server's error message", async () => {
     fetchMock.mockResolvedValue(
-      jsonResponse(502, { error: "AI provider request failed" }),
+      jsonResponse(503, { error: "AI mnemonics are unavailable right now." }),
     );
     renderGenerator();
 
@@ -180,9 +180,25 @@ describe("PassphraseGenerator", () => {
     );
 
     expect(await screen.findByText("Error generating mnemonic.")).toBeTruthy();
+    // Shown verbatim: no "Please try again" when retrying won't help
     expect(
-      screen.getByText("AI provider request failed. Please try again."),
+      screen.getByText("AI mnemonics are unavailable right now."),
     ).toBeTruthy();
     expect(screen.queryByLabelText(/^An AI generated mnemonic/)).toBeNull();
+  });
+
+  it("explains network failures", async () => {
+    fetchMock.mockRejectedValue(new TypeError("Failed to fetch"));
+    renderGenerator();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Generate a new passphrase" }),
+    );
+
+    expect(
+      await screen.findByText(
+        "Couldn't reach the server. Check your connection and try again.",
+      ),
+    ).toBeTruthy();
   });
 });

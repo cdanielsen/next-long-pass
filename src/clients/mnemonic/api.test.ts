@@ -51,10 +51,20 @@ describe("fetchMnemonic", () => {
   });
 
   it("uses the server's error message for non-OK responses", async () => {
-    stubFetch(jsonResponse(502, { error: "AI provider request failed" }));
+    stubFetch(
+      jsonResponse(503, { error: "AI mnemonics are unavailable right now." }),
+    );
     await expectMnemonicError(fetchMnemonic(REQUEST), {
-      message: "AI provider request failed",
-      status: 502,
+      message: "AI mnemonics are unavailable right now.",
+      status: 503,
+    });
+  });
+
+  it("explains a platform rate limit (429 without a JSON body)", async () => {
+    stubFetch(new Response("Too Many Requests", { status: 429 }));
+    await expectMnemonicError(fetchMnemonic(REQUEST), {
+      message: "Too many requests. Wait a minute and try again.",
+      status: 429,
     });
   });
 

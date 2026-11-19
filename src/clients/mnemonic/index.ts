@@ -1,2 +1,2 @@
 export { useMnemonic } from "./useMnemonic";
-export { MnemonicError, fetchMnemonic } from "./api";
+export { MnemonicError, NETWORK_ERROR_MESSAGE, fetchMnemonic } from "./api";
