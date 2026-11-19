@@ -131,9 +131,7 @@ describe("PassphraseGenerator", () => {
     fireEvent.click(button("New passphrase"));
     fireEvent.click(button("New passphrase"));
     const final = shownPassphrase();
-    expect(
-      screen.getByText("Mnemonic coming once you stop rolling…"),
-    ).toBeTruthy();
+    expect(screen.getByText("Waiting for settled passphrase…")).toBeTruthy();
 
     act(() => {
       vi.advanceTimersByTime(MNEMONIC_DEBOUNCE_MS - 1);
@@ -159,7 +157,7 @@ describe("PassphraseGenerator", () => {
     });
 
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(screen.queryByText(/stop rolling/)).toBeNull();
+    expect(screen.queryByText(/Waiting for settled/)).toBeNull();
   });
 
   it("writes a new mnemonic for the same words on request", async () => {

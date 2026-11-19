@@ -33,7 +33,7 @@ const MnemonicPanel = ({
   const isOn = choice !== "off";
 
   const status = isPending
-    ? "Mnemonic coming once you stop rolling…"
+    ? "Waiting for settled passphrase…"
     : isLoading
       ? "Writing a mnemonic…"
       : null;
