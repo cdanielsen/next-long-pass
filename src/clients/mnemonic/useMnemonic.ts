@@ -5,8 +5,8 @@ import { fetchMnemonic } from "./api";
 
 /**
  * Generates AI mnemonics on demand. Requests only go out when `generate` is
- * called (never from an effect), so config changes and StrictMode re-renders
- * don't trigger paid API calls.
+ * called (never from an effect), so StrictMode re-renders don't trigger paid
+ * API calls.
  *
  * Each call aborts the previous in-flight request and clears the previous
  * mnemonic, so a slow earlier response can never overwrite a newer one.
@@ -44,5 +44,14 @@ export const useMnemonic = () => {
     }
   }, []);
 
-  return { mnemonic, error, isLoading, generate };
+  /** Abort any in-flight request and clear the mnemonic and error. */
+  const reset = useCallback(() => {
+    controllerRef.current?.abort();
+    controllerRef.current = null;
+    setMnemonic(null);
+    setError(null);
+    setIsLoading(false);
+  }, []);
+
+  return { mnemonic, error, isLoading, generate, reset };
 };

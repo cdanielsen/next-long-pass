@@ -1,0 +1,87 @@
+.panel {
+  composes: panel from "../styles/ui.module.css";
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.rowLabel {
+  font-weight: 500;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  border: var(--hairline);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+}
+
+.step {
+  width: var(--tap);
+  height: var(--tap);
+  border: 0;
+  background: transparent;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.step:disabled {
+  color: var(--color-muted);
+  opacity: 0.45;
+}
+
+.count {
+  min-width: 3ch;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.strength {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.bits {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--segment);
+}
+
+.weak {
+  --segment: var(--color-weak);
+}
+
+.fair {
+  --segment: var(--color-fair);
+}
+
+.strong {
+  --segment: var(--color-strong);
+}
+
+.meter {
+  display: grid;
+  grid-template-columns: repeat(var(--segments), minmax(0, 1fr));
+  gap: 3px;
+}
+
+.segment {
+  height: 10px;
+  background: var(--color-track);
+}
+
+.filled {
+  background: var(--segment);
+}
+
+.hint {
+  composes: note from "../styles/ui.module.css";
+}

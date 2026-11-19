@@ -1,0 +1,86 @@
+.panel {
+  composes: panel from "../styles/ui.module.css";
+}
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border: var(--hairline);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.option {
+  position: relative;
+  display: flex;
+}
+
+.radio {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.optionText {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: 0 var(--space-1);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* McConaughey is long; narrow it rather than wrap on small phones */
+.option:last-child .optionText {
+  font-stretch: 85%;
+}
+
+.radio:hover + .optionText {
+  color: var(--color-ink);
+}
+
+.radio:checked + .optionText {
+  background: var(--color-ink);
+  color: var(--color-bg);
+  font-weight: 700;
+}
+
+.radio:focus-visible + .optionText {
+  outline: 3px solid var(--color-accent);
+  outline-offset: -3px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.mnemonic {
+  font-size: var(--text-lg);
+  line-height: 1.5;
+}
+
+.status {
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-left: calc(-1 * var(--space-3));
+}
+
+.note {
+  composes: note from "../styles/ui.module.css";
+}

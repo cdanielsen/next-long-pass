@@ -179,4 +179,37 @@ describe("useMnemonic", () => {
     unmount();
     expect(fetchMnemonic.mock.calls[0][1]?.aborted).toBe(true);
   });
+
+  it("reset aborts the in-flight request and ignores its result", async () => {
+    const d = abortable(deferred<string>());
+    fetchMnemonic.mockImplementation(d);
+    const { result } = renderHook(() => useMnemonic());
+    let pending!: Promise<void>;
+    act(() => {
+      pending = result.current.generate("apple bring crane", "standard");
+    });
+
+    act(() => {
+      result.current.reset();
+    });
+    await act(() => pending);
+
+    expect(fetchMnemonic.mock.calls[0][1]?.aborted).toBe(true);
+    expect(result.current).toMatchObject({
+      mnemonic: null,
+      error: null,
+      isLoading: false,
+    });
+  });
+
+  it("reset clears a shown mnemonic", async () => {
+    fetchMnemonic.mockResolvedValueOnce("First.");
+    const { result } = renderHook(() => useMnemonic());
+    await act(() => result.current.generate("apple bring crane", "standard"));
+
+    act(() => {
+      result.current.reset();
+    });
+    expect(result.current.mnemonic).toBeNull();
+  });
 });

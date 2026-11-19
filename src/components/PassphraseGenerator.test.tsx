@@ -1,17 +1,18 @@
 // @vitest-environment jsdom
-import { ChakraProvider } from "@chakra-ui/react";
 import {
+  act,
   cleanup,
   fireEvent,
   render,
   screen,
-  waitFor,
+  within,
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import PassphraseGenerator from "./PassphraseGenerator";
-import theme from "../theme";
-import { DEFAULT_WORDS } from "../../shared/passphrase";
+import PassphraseGenerator, {
+  MNEMONIC_DEBOUNCE_MS,
+} from "./PassphraseGenerator";
+import { DEFAULT_WORDS, MAX_WORDS } from "../../shared/passphrase";
 
 interface RequestBody {
   passphrase: string;
@@ -20,6 +21,7 @@ interface RequestBody {
 
 const fetchMock =
   vi.fn<(url: string, init: RequestInit) => Promise<Response>>();
+const writeText = vi.fn<(text: string) => Promise<void>>();
 
 const jsonResponse = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), {
@@ -32,40 +34,30 @@ const requestBodies = () =>
     ([, init]) => JSON.parse(init.body as string) as RequestBody,
   );
 
-const renderGenerator = () =>
-  render(
-    <ChakraProvider theme={theme}>
-      <PassphraseGenerator />
-    </ChakraProvider>,
-  );
+/** The passphrase shown, read from the screen-reader copy of each word. */
+const shownPassphrase = () =>
+  within(screen.getByRole("list", { name: "Your passphrase" }))
+    .getAllByRole("listitem")
+    .map((li) => li.querySelector(".visually-hidden")?.textContent ?? "")
+    .join(" ");
 
-/** The passphrase currently shown, read from its section's aria-label. */
-const shownPassphrase = () => {
-  const label = screen
-    .getByLabelText(/^A set of random words/)
-    .getAttribute("aria-label");
-  const match = /"(.+)"/.exec(label ?? "");
-  if (!match) throw new Error(`Unexpected passphrase label: ${String(label)}`);
-  return match[1];
-};
+const findMnemonic = (text: string) =>
+  screen.findByText(text, { selector: "blockquote .visually-hidden" });
+
+const button = (name: string) => screen.getByRole("button", { name });
+const radio = (name: string) => screen.getByRole("radio", { name });
 
 beforeEach(() => {
-  // Chakra's slider measures itself
-  vi.stubGlobal(
-    "ResizeObserver",
-    vi.fn(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    })),
-  );
   // jsdom lacks matchMedia (used by the typing animation's reduced-motion check)
   vi.stubGlobal(
     "matchMedia",
     vi.fn((query: string) => ({ matches: false, media: query })),
   );
-  // framer-motion (Collapse) calls this; jsdom doesn't implement it
-  vi.stubGlobal("scrollTo", () => undefined);
+  Object.defineProperty(navigator, "clipboard", {
+    value: { writeText },
+    configurable: true,
+  });
+  writeText.mockResolvedValue(undefined);
   vi.spyOn(console, "error").mockImplementation(() => undefined);
   vi.stubGlobal("fetch", fetchMock);
   fetchMock.mockImplementation((_url, init) => {
@@ -78,127 +70,159 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   fetchMock.mockReset();
+  writeText.mockReset();
 });
 
 describe("PassphraseGenerator", () => {
-  it("generates a passphrase and its mnemonic on click", async () => {
-    renderGenerator();
+  it("shows a passphrase on load without contacting the AI", () => {
+    render(<PassphraseGenerator />);
+
+    expect(shownPassphrase().split(" ")).toHaveLength(DEFAULT_WORDS);
+    expect(radio("Off")).toHaveProperty("checked", true);
+    expect(screen.getByText("64.6 bits · strong")).toBeTruthy();
     expect(fetchMock).not.toHaveBeenCalled();
+  });
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "Generate a new passphrase" }),
-    );
+  it("rolls new words locally while the mnemonic is off", () => {
+    render(<PassphraseGenerator />);
+    const first = shownPassphrase();
 
+    fireEvent.click(button("New passphrase"));
+
+    expect(shownPassphrase()).not.toBe(first);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("requests a mnemonic for the current words as soon as a style is picked", async () => {
+    render(<PassphraseGenerator />);
     const passphrase = shownPassphrase();
-    expect(passphrase.split(" ")).toHaveLength(DEFAULT_WORDS);
+
+    fireEvent.click(radio("Standard"));
+
     expect(requestBodies()).toEqual([{ passphrase, mode: "standard" }]);
     expect(fetchMock.mock.calls[0][0]).toBe("/api/mnemonic");
-
-    expect(
-      await screen.findByLabelText(
-        `An AI generated mnemonic for the random words "${passphrase}": Mnemonic for ${passphrase}`,
-      ),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: "Generate a new passphrase" })
-        .textContent,
-    ).toBe("Make me another");
-    expect(
-      screen.getByRole("button", { name: "Copy passphrase" }),
-    ).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Copy mnemonic" })).toBeTruthy();
+    expect(await findMnemonic(`Mnemonic for ${passphrase}`)).toBeTruthy();
   });
 
-  it("applies AI mode on the next click without requesting on change", async () => {
-    renderGenerator();
-    fireEvent.click(
-      screen.getByRole("button", { name: "Passphrase configuration" }),
-    );
+  it("rewrites the mnemonic right away when the style changes", () => {
+    render(<PassphraseGenerator />);
+    const passphrase = shownPassphrase();
 
-    fireEvent.click(
-      await screen.findByRole("radio", { name: "Matthew McConaughey" }),
-    );
+    fireEvent.click(radio("Standard"));
+    fireEvent.click(radio("McConaughey"));
+
+    expect(requestBodies()).toEqual([
+      { passphrase, mode: "standard" },
+      { passphrase, mode: "mcconaughey" },
+    ]);
+  });
+
+  it("waits for re-rolling to stop, then requests once for the final words", () => {
+    render(<PassphraseGenerator />);
+    fireEvent.click(radio("Standard"));
+    fetchMock.mockClear();
+    vi.useFakeTimers();
+
+    fireEvent.click(button("New passphrase"));
+    fireEvent.click(button("New passphrase"));
+    fireEvent.click(button("New passphrase"));
+    const final = shownPassphrase();
+    expect(
+      screen.getByText("Mnemonic coming once you stop rolling…"),
+    ).toBeTruthy();
+
+    act(() => {
+      vi.advanceTimersByTime(MNEMONIC_DEBOUNCE_MS - 1);
+    });
     expect(fetchMock).not.toHaveBeenCalled();
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "Generate a new passphrase" }),
-    );
-    expect(requestBodies()[0].mode).toBe("mcconaughey");
-  });
-
-  it("uses the word count slider for the next passphrase and entropy label", async () => {
-    renderGenerator();
-    fireEvent.click(
-      screen.getByRole("button", { name: "Passphrase configuration" }),
-    );
-
-    const slider = await screen.findByRole("slider");
-    expect(screen.getByText("(~65 bits · strong)")).toBeTruthy();
-
-    fireEvent.keyDown(slider, { key: "ArrowRight" });
-    expect(screen.getByText("(~78 bits · strong)")).toBeTruthy();
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "Generate a new passphrase" }),
-    );
-    expect(shownPassphrase().split(" ")).toHaveLength(DEFAULT_WORDS + 1);
-  });
-
-  it("regenerates the mnemonic for the same passphrase", async () => {
-    renderGenerator();
-    expect(
-      screen.queryByRole("button", { name: "Regenerate the AI mnemonic" }),
-    ).toBeNull();
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "Generate a new passphrase" }),
-    );
-    const passphrase = shownPassphrase();
-    await screen.findByLabelText(/^An AI generated mnemonic/);
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "Regenerate the AI mnemonic" }),
-    );
-    await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledTimes(2);
+    act(() => {
+      vi.advanceTimersByTime(1);
     });
-    expect(requestBodies()[1].passphrase).toBe(passphrase);
+    expect(requestBodies()).toEqual([{ passphrase: final, mode: "standard" }]);
+  });
+
+  it("drops a pending request when switched off", () => {
+    render(<PassphraseGenerator />);
+    fireEvent.click(radio("Standard"));
+    fetchMock.mockClear();
+    vi.useFakeTimers();
+
+    fireEvent.click(button("New passphrase"));
+    fireEvent.click(radio("Off"));
+    act(() => {
+      vi.advanceTimersByTime(MNEMONIC_DEBOUNCE_MS * 2);
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(screen.queryByText(/stop rolling/)).toBeNull();
+  });
+
+  it("writes a new mnemonic for the same words on request", async () => {
+    render(<PassphraseGenerator />);
+    const passphrase = shownPassphrase();
+    fireEvent.click(radio("Standard"));
+    await findMnemonic(`Mnemonic for ${passphrase}`);
+
+    fireEvent.click(button("New mnemonic"));
+
+    expect(requestBodies()[1]).toEqual({ passphrase, mode: "standard" });
     expect(shownPassphrase()).toBe(passphrase);
   });
 
-  it("shows the server's error message", async () => {
+  it("changes the word count, rerolls and updates the strength", () => {
+    render(<PassphraseGenerator />);
+
+    fireEvent.click(button("More words"));
+    expect(shownPassphrase().split(" ")).toHaveLength(MAX_WORDS);
+    expect(screen.getByText("77.5 bits · strong")).toBeTruthy();
+    expect(button("More words")).toHaveProperty("disabled", true);
+
+    fireEvent.click(button("Fewer words"));
+    fireEvent.click(button("Fewer words"));
+    fireEvent.click(button("Fewer words"));
+    expect(shownPassphrase().split(" ")).toHaveLength(3);
+    expect(screen.getByText("38.8 bits · weak")).toBeTruthy();
+    expect(button("Fewer words")).toHaveProperty("disabled", true);
+  });
+
+  it("copies the passphrase and confirms it", async () => {
+    render(<PassphraseGenerator />);
+
+    fireEvent.click(button("Copy passphrase"));
+
+    expect(writeText).toHaveBeenCalledWith(shownPassphrase());
+    expect(await screen.findByText("Copied to clipboard")).toBeTruthy();
+  });
+
+  it("shows the server's error message verbatim", async () => {
     fetchMock.mockResolvedValue(
       jsonResponse(503, { error: "AI mnemonics are unavailable right now." }),
     );
-    renderGenerator();
+    render(<PassphraseGenerator />);
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "Generate a new passphrase" }),
+    fireEvent.click(radio("Standard"));
+
+    const alert = await screen.findByRole("alert");
+    // No "Please try again" when retrying won't help
+    expect(alert.textContent).toContain(
+      "AI mnemonics are unavailable right now.",
     );
-
-    expect(await screen.findByText("Error generating mnemonic.")).toBeTruthy();
-    // Shown verbatim: no "Please try again" when retrying won't help
-    expect(
-      screen.getByText("AI mnemonics are unavailable right now."),
-    ).toBeTruthy();
-    expect(screen.queryByLabelText(/^An AI generated mnemonic/)).toBeNull();
+    expect(alert.textContent).not.toMatch(/try again/i);
   });
 
   it("explains network failures", async () => {
     fetchMock.mockRejectedValue(new TypeError("Failed to fetch"));
-    renderGenerator();
+    render(<PassphraseGenerator />);
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "Generate a new passphrase" }),
+    fireEvent.click(radio("Standard"));
+
+    expect((await screen.findByRole("alert")).textContent).toContain(
+      "Couldn't reach the server. Check your connection and try again.",
     );
-
-    expect(
-      await screen.findByText(
-        "Couldn't reach the server. Check your connection and try again.",
-      ),
-    ).toBeTruthy();
   });
 });
