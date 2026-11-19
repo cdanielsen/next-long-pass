@@ -3,16 +3,17 @@ import styles from "./WordList.module.css";
 
 interface WordListProps {
   words: string[];
-  labelledBy: string;
+  /** Accessible name for the list. */
+  label: string;
 }
 
-const TypedWords = ({ words, labelledBy }: WordListProps) => {
+const TypedWords = ({ words, label }: WordListProps) => {
   // Type the whole phrase in one pass, then split it back into rows so the
   // rows keep their place while the words fill in.
   const typed = useTypedText(words.join(" ")).split(" ");
 
   return (
-    <ol className={styles.list} aria-labelledby={labelledBy}>
+    <ol className={styles.list} aria-label={label}>
       {words.map((word, i) => (
         <li key={`${String(i)}-${word}`} className={styles.item}>
           <span className={styles.number} aria-hidden="true">

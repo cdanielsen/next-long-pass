@@ -64,11 +64,8 @@ const PassphraseGenerator = () => {
 
   return (
     <div className={styles.layout}>
-      <section className={styles.words} aria-labelledby="passphrase-title">
-        <h2 id="passphrase-title" className={ui.label}>
-          Your passphrase
-        </h2>
-        <WordList words={passphrase.split(" ")} labelledBy="passphrase-title" />
+      <section className={styles.words} aria-label="Your passphrase">
+        <WordList words={passphrase.split(" ")} label="Your passphrase" />
         <div className={styles.actions}>
           <button
             type="button"
