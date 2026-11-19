@@ -1,21 +1,23 @@
 import { Route, Routes } from "react-router";
-import { Flex } from "@chakra-ui/react";
 
-import Nav from "./Nav";
+import AppHeader from "./AppHeader";
 import Root from "../routes/Root";
 import About from "../routes/About";
 import NotFound from "./NotFound";
+import styles from "./App.module.css";
 
 function App() {
   return (
-    <Flex id="App__Container" direction="column" minHeight="100vh">
-      <Nav />
-      <Routes>
-        <Route path="/" element={<Root />} />
-        <Route path="/about" element={<About />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Flex>
+    <div className={styles.app}>
+      <AppHeader />
+      <main className={styles.main}>
+        <Routes>
+          <Route path="/" element={<Root />} />
+          <Route path="/about" element={<About />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
