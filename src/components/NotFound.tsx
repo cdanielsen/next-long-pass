@@ -1,19 +1,19 @@
-import { Flex, Text } from "@chakra-ui/react";
-import { useLocation } from "react-router";
+import { Link, useLocation } from "react-router";
+
+import styles from "./StatusPage.module.css";
 
 export default function NotFound() {
   const { pathname } = useLocation();
 
   return (
-    <Flex
-      direction="column"
-      id="NotFound"
-      justify="center"
-      align="center"
-      height="100%"
-    >
-      <Text fontSize="6xl">404</Text>
-      <Text>{`Sorry, this route wasn't found: ${pathname}`}</Text>
-    </Flex>
+    <section className={styles.page} aria-labelledby="not-found-title">
+      <h2 id="not-found-title" className={styles.code}>
+        404
+      </h2>
+      <p className={styles.message}>{`There's no page at ${pathname}.`}</p>
+      <Link to="/" className={styles.home}>
+        Make a passphrase
+      </Link>
+    </section>
   );
 }

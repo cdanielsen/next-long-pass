@@ -1,0 +1,70 @@
+.picker {
+  display: flex;
+  margin-right: -7px; /* align the last swatch with the panel edge */
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: var(--tap);
+}
+
+.radio {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: 0 0 0 2px var(--color-surface);
+}
+
+.radio:checked + .swatch {
+  box-shadow:
+    0 0 0 2px var(--color-surface),
+    0 0 0 4px var(--color-ink);
+}
+
+.radio:focus-visible + .swatch {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 4px;
+}
+
+/* Swatches show each accent as it looks in the current color scheme */
+.teal {
+  --swatch: #0e6a64;
+}
+
+.blue {
+  --swatch: #2c4fa8;
+}
+
+.plum {
+  --swatch: #7a3b88;
+}
+
+@media (prefers-color-scheme: dark) {
+  .teal {
+    --swatch: #5ec8bd;
+  }
+
+  .blue {
+    --swatch: #93aef5;
+  }
+
+  .plum {
+    --swatch: #d3a1e2;
+  }
+}

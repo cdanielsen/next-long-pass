@@ -1,0 +1,33 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding-block: var(--space-2);
+  border-bottom: var(--hairline);
+}
+
+.number {
+  flex-shrink: 0;
+  width: 2ch;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.word {
+  min-width: 0;
+  /* Reserve a line while the word is still typing */
+  min-height: 1.15em;
+  font-family: var(--font-mono);
+  font-size: var(--text-word);
+  font-weight: 500;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}

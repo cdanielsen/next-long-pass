@@ -1,16 +1,14 @@
-import { Flex, Text } from "@chakra-ui/react";
+import styles from "./StatusPage.module.css";
 
 export default function ServerError() {
   return (
-    <Flex
-      direction="column"
-      id="ServerError"
-      justify="center"
-      align="center"
-      height="100%"
-    >
-      <Text fontSize="6xl">500</Text>
-      <Text>{`Oh dear, something unexpected has happened`}</Text>
-    </Flex>
+    <section className={styles.page} aria-labelledby="server-error-title">
+      <h2 id="server-error-title" className={styles.code}>
+        500
+      </h2>
+      <p className={styles.message}>
+        Something unexpected went wrong. Reload the page to try again.
+      </p>
+    </section>
   );
 }

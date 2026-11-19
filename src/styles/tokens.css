@@ -1,0 +1,96 @@
+/*
+ * Design tokens ("Field notes"). Components read only these custom
+ * properties, so the palette and type can change in one place.
+ * Dark mode follows the system setting.
+ */
+:root {
+  color-scheme: light;
+
+  /* Color */
+  --color-bg: #edefe9;
+  --color-surface: #f8f9f5;
+  --color-border: #cbd0c3;
+  --color-ink: #1b201a;
+  --color-muted: #525a50;
+  --color-accent: #0e6a64;
+  --color-on-accent: #ffffff;
+  --color-track: #cbd0c3;
+  --color-weak: #a3361c;
+  --color-fair: #8a5a00;
+  --color-strong: #1c6b3d;
+  --color-danger-bg: #f6e3dd;
+  --color-danger-ink: #7c2412;
+
+  /* Type */
+  --font-sans:
+    "Archivo Variable", "Archivo", system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-mono:
+    "Martian Mono Variable", "Martian Mono", ui-monospace, Menlo, Consolas,
+    monospace;
+  --text-xs: 0.8125rem; /* 13px: labels, notes */
+  --text-sm: 0.875rem;
+  --text-md: 0.9375rem; /* 15px: UI */
+  --text-lg: 1.125rem; /* 18px: mnemonic */
+  --text-title: clamp(1.375rem, 3.6vw, 2.25rem);
+  --text-word: clamp(1.5rem, 3.4vw, 2.25rem);
+
+  /* Space, shape, motion */
+  --gutter: clamp(16px, 4vw, 48px);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 40px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --rule: 2px solid var(--color-ink);
+  --hairline: 1px solid var(--color-border);
+  --tap: 44px;
+  --content-max: 1200px;
+}
+
+/* Accent choices (see src/lib/accent.ts). Teal is the default above. */
+:root[data-accent="blue"] {
+  --color-accent: #2c4fa8;
+  --color-on-accent: #ffffff;
+}
+
+:root[data-accent="plum"] {
+  --color-accent: #7a3b88;
+  --color-on-accent: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --color-bg: #141814;
+    --color-surface: #1c211c;
+    --color-border: #333b32;
+    --color-ink: #e5e8e0;
+    --color-muted: #a1a99d;
+    --color-accent: #5ec8bd;
+    --color-on-accent: #0b1a18;
+    --color-track: #363e35;
+    --color-weak: #f08a6c;
+    --color-fair: #e2b04a;
+    --color-strong: #73cc93;
+    --color-danger-bg: #3a1f18;
+    --color-danger-ink: #f6c2b3;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-accent="blue"] {
+    --color-accent: #93aef5;
+    --color-on-accent: #0f1a33;
+  }
+
+  :root[data-accent="plum"] {
+    --color-accent: #d3a1e2;
+    --color-on-accent: #241029;
+  }
+}
