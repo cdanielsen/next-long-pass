@@ -1,5 +1,6 @@
 .picker {
   display: flex;
+  margin-right: -7px; /* align the last swatch with the panel edge */
   margin: 0;
   padding: 0;
   border: 0;
@@ -27,12 +28,12 @@
   height: 18px;
   border-radius: 50%;
   background: var(--swatch);
-  box-shadow: 0 0 0 2px var(--color-bg);
+  box-shadow: 0 0 0 2px var(--color-surface);
 }
 
 .radio:checked + .swatch {
   box-shadow:
-    0 0 0 2px var(--color-bg),
+    0 0 0 2px var(--color-surface),
     0 0 0 4px var(--color-ink);
 }
 

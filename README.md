@@ -11,7 +11,7 @@ Frontend:
 - Bootstrapped with [vite](https://vitejs.dev/guide/) React + TypeScript template
 - Plain CSS, no component library:
   - `src/styles/tokens.css`: every color, font and spacing value as CSS custom properties. Light by default; dark follows the system setting. Restyle the app here.
-  - Accent color picker in the header (teal / blue / plum): sets `<html data-accent>`, which swaps the accent tokens. The choice is saved in localStorage.
+  - Accent color picker in the Settings card (teal / blue / plum): sets `<html data-accent>`, which swaps the accent tokens. The choice is saved in localStorage.
   - `src/styles/global.css`: reset and base element styles
   - CSS Modules (`*.module.css`) next to each component, sharing panels, labels and buttons from `src/styles/ui.module.css`
   - Responsive by wrapping (flex-wrap, `clamp()`), not breakpoints

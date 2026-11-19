@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 
+import AccentPicker from "./AccentPicker";
 import { entropyBits, entropyStrength } from "../lib/passphrase";
 import { MAX_WORDS, MIN_WORDS } from "../../shared/passphrase";
 import ui from "../styles/ui.module.css";
@@ -88,6 +89,14 @@ const SettingsPanel = ({
           ))}
         </div>
         <p className={styles.hint}>{HINTS[strength]}</p>
+      </div>
+
+      <div className={styles.row}>
+        {/* The picker's own legend names it for screen readers */}
+        <span className={styles.rowLabel} aria-hidden="true">
+          Accent
+        </span>
+        <AccentPicker />
       </div>
     </section>
   );
