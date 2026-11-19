@@ -9,8 +9,18 @@ An app for generating a good long passphrase with an AI generated mnemonic to re
 Frontend:
 
 - Bootstrapped with [vite](https://vitejs.dev/guide/) React + TypeScript template
-- React Components and styling with [Chakra UI](https://chakra-ui.com/)
-- Icons via [React Icons](https://react-icons.github.io/react-icons)
+- Plain CSS, no component library:
+  - `src/styles/tokens.css`: every color, font and spacing value as CSS custom properties. Light by default; dark follows the system setting. Restyle the app here.
+  - `src/styles/global.css`: reset and base element styles
+  - CSS Modules (`*.module.css`) next to each component, sharing panels, labels and buttons from `src/styles/ui.module.css`
+  - Responsive by wrapping (flex-wrap, `clamp()`), not breakpoints
+- Fonts self-hosted via Fontsource: [Archivo](https://fonts.google.com/specimen/Archivo) (UI, wide uppercase titles) and [Martian Mono](https://fonts.google.com/specimen/Martian+Mono) (passphrase words)
+- Inline SVG icons (`src/components/icons.tsx`)
+
+AI mnemonic (UI):
+
+- Off by default; nothing is sent until you pick a style
+- After re-rolling words, waits 1s (`MNEMONIC_DEBOUNCE_MS`) so rapid re-rolls make a single request. Changing the style or pressing New mnemonic requests immediately.
 
 Passphrases:
 
