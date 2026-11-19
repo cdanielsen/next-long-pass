@@ -80,4 +80,12 @@ export default async (req: Request): Promise<Response> => {
  */
 export const config: Config = {
   path: "/api/mnemonic",
+  // Per-visitor cap enforced by the platform before the function runs (a 429
+  // with no JSON body), so blocked requests cost nothing. Not enforced by
+  // `netlify dev`. Max windowSize is 180s.
+  rateLimit: {
+    windowLimit: 10,
+    windowSize: 60,
+    aggregateBy: ["ip", "domain"],
+  },
 };

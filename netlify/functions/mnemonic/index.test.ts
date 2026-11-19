@@ -56,6 +56,14 @@ describe("mnemonic function", () => {
     expect(config.path).toBe(MNEMONIC_ENDPOINT);
   });
 
+  it("is rate limited per visitor", () => {
+    expect(config.rateLimit).toEqual({
+      windowLimit: 10,
+      windowSize: 60,
+      aggregateBy: ["ip", "domain"],
+    });
+  });
+
   it("returns the trimmed mnemonic on success", async () => {
     const res = await invoke(VALID);
     expect(res).toMatchObject({
