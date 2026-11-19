@@ -1,6 +1,7 @@
 import OpenAI from "openai";
-import type { Handler, HandlerResponse } from "@netlify/functions";
+import type { Config } from "@netlify/functions";
 import type { MnemonicResponse } from "../../../shared/api";
+import { describeError, ERROR_MESSAGES, toErrorResponse } from "./errors";
 import { validateRequest } from "./validate";
 import { mockMnemonic } from "./mock";
 import { buildMessages } from "./prompt";
@@ -17,28 +18,24 @@ const DEFAULT_MODEL = "gpt-6-luna";
 const MAX_COMPLETION_TOKENS = 120;
 
 const json = (
-  statusCode: number,
+  status: number,
   body: MnemonicResponse,
   headers: Record<string, string> = {},
-): HandlerResponse => ({
-  statusCode,
-  headers: { "Content-Type": "application/json", ...headers },
-  body: JSON.stringify(body),
-});
+): Response => Response.json(body, { status, headers });
 
 let client: OpenAI | undefined;
 const getClient = (apiKey: string) => (client ??= new OpenAI({ apiKey }));
 
-const handler: Handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return json(405, { error: "Method not allowed" }, { Allow: "POST" });
+export default async (req: Request): Promise<Response> => {
+  if (req.method !== "POST") {
+    return json(405, { error: "Method not allowed." }, { Allow: "POST" });
   }
 
   let body: unknown;
   try {
-    body = JSON.parse(event.body ?? "");
+    body = await req.json();
   } catch {
-    return json(400, { error: "Request body must be valid JSON" });
+    return json(400, { error: "Request body must be valid JSON." });
   }
 
   const validation = validateRequest(body);
@@ -55,7 +52,7 @@ const handler: Handler = async (event) => {
   const apiKey = process.env.OPEN_AI_KEY;
   if (!apiKey) {
     console.error("Missing required env variable OPEN_AI_KEY");
-    return json(500, { error: "Server is not configured" });
+    return json(500, { error: ERROR_MESSAGES.unavailable });
   }
 
   try {
@@ -68,14 +65,30 @@ const handler: Handler = async (event) => {
 
     const message = completion.choices[0]?.message.content?.trim();
     if (!message) {
-      return json(502, { error: "Empty response from AI provider" });
+      console.error("AI provider returned empty content");
+      return json(502, { error: ERROR_MESSAGES.failed });
     }
 
     return json(200, { message });
   } catch (error) {
-    console.error(error);
-    return json(502, { error: "AI provider request failed" });
+    console.error("AI provider request failed", describeError(error));
+    const { status, message, headers } = toErrorResponse(error);
+    return json(status, { error: message }, headers);
   }
 };
 
-export { handler };
+/**
+ * Netlify reads this statically at build time, so values must be literals:
+ * an imported constant (e.g. MNEMONIC_ENDPOINT) is silently ignored.
+ */
+export const config: Config = {
+  path: "/api/mnemonic",
+  // Per-visitor cap enforced by the platform before the function runs (a 429
+  // with no JSON body), so blocked requests cost nothing. Not enforced by
+  // `netlify dev`. Max windowSize is 180s.
+  rateLimit: {
+    windowLimit: 10,
+    windowSize: 60,
+    aggregateBy: ["ip", "domain"],
+  },
+};

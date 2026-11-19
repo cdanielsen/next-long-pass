@@ -20,6 +20,15 @@ Passphrases:
 Backend:
 
 - `POST /api/mnemonic` [Netlify function](https://www.netlify.com/products/functions/) (`netlify/functions/mnemonic`) generates the AI mnemonic. The provider (currently OpenAI) is an implementation detail of the function.
+  - Rate limited to 10 requests per minute per IP by Netlify (`config.rateLimit`). The platform rejects excess requests with a 429 before the function runs. `netlify dev` doesn't enforce the limit.
+  - Errors return `{ "error": "<message>" }` with a complete, user-facing message. The UI shows it verbatim, so the server decides whether to suggest retrying:
+
+    | Cause                                                   | Status              | Retry suggested |
+    | ------------------------------------------------------- | ------------------- | --------------- |
+    | Invalid request                                         | 400                 | –               |
+    | Provider busy (upstream rate limit)                     | 503 + `Retry-After` | yes             |
+    | Quota exhausted, bad key, unknown model, missing config | 503 / 500           | no              |
+    | Any other provider failure                              | 502                 | yes             |
 - `shared/` holds the request/response contract and limits used by both the frontend and the function
 
 ## Local Dev / Setup

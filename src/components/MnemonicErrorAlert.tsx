@@ -6,7 +6,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 
-import { MnemonicError } from "../clients/mnemonic";
+import { MnemonicError, NETWORK_ERROR_MESSAGE } from "../clients/mnemonic";
 
 interface MnemonicErrorAlertProps {
   error: Error;
@@ -18,9 +18,8 @@ const MnemonicErrorAlert = ({ error }: MnemonicErrorAlertProps) => (
     <Flex direction="column">
       <AlertTitle fontSize="0.75rem">Error generating mnemonic.</AlertTitle>
       <AlertDescription fontSize="0.75rem">
-        {error instanceof MnemonicError
-          ? `${error.message}. Please try again.`
-          : "Please try again later"}
+        {/* The server owns the full text, incl. whether retrying helps */}
+        {error instanceof MnemonicError ? error.message : NETWORK_ERROR_MESSAGE}
       </AlertDescription>
     </Flex>
   </Alert>

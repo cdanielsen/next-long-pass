@@ -1,19 +1,23 @@
-import type { HandlerContext, HandlerEvent } from "@netlify/functions";
 import type { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { MNEMONIC_ENDPOINT } from "../../../shared/api";
 
 const create =
   vi.fn<(body: ChatCompletionCreateParamsNonStreaming) => Promise<unknown>>();
 
 // The handler calls `new OpenAI(...)`; Vitest 4+ only constructs mocks whose
 // implementation is a class or function, so mock with a class.
-vi.mock("openai", () => ({
+// Keep the real error classes so the handler's error mapping sees them.
+vi.mock("openai", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("openai")>()),
   default: class {
     chat = { completions: { create } };
   },
 }));
 
-const { handler } = await import("./index");
+const { default: handler, config } = await import("./index");
+const { APIError } = await import("openai");
 
 const VALID = { passphrase: "apple bring crane dozen", mode: "standard" };
 
@@ -21,15 +25,16 @@ const invoke = async (
   body: unknown,
   { method = "POST", raw = false }: { method?: string; raw?: boolean } = {},
 ) => {
-  const event = {
-    httpMethod: method,
-    body: raw ? (body as string) : JSON.stringify(body),
-  } as HandlerEvent;
-  const response = await handler(event, {} as HandlerContext);
-  if (!response) throw new Error("handler returned no response");
+  const request = new Request("http://localhost/api/mnemonic", {
+    method,
+    body:
+      method === "GET" ? null : raw ? (body as string) : JSON.stringify(body),
+  });
+  const response = await handler(request);
   return {
-    status: response.statusCode,
-    body: JSON.parse(response.body ?? "{}") as Record<string, unknown>,
+    status: response.status,
+    headers: response.headers,
+    body: (await response.json()) as Record<string, unknown>,
   };
 };
 
@@ -49,9 +54,22 @@ afterEach(() => {
 });
 
 describe("mnemonic function", () => {
+  it("is served at the shared endpoint", () => {
+    // config must use literals (Netlify parses it statically), so guard drift
+    expect(config.path).toBe(MNEMONIC_ENDPOINT);
+  });
+
+  it("is rate limited per visitor", () => {
+    expect(config.rateLimit).toEqual({
+      windowLimit: 10,
+      windowSize: 60,
+      aggregateBy: ["ip", "domain"],
+    });
+  });
+
   it("returns the trimmed mnemonic on success", async () => {
     const res = await invoke(VALID);
-    expect(res).toEqual({
+    expect(res).toMatchObject({
       status: 200,
       body: { message: "An apple brings a crane a dozen." },
     });
@@ -132,13 +150,53 @@ describe("mnemonic function", () => {
     vi.stubEnv("OPEN_AI_KEY", "");
     const res = await invoke(VALID);
     expect(res.status).toBe(500);
+    expect(res.body.error).not.toMatch(/try again/i);
     expect(create).not.toHaveBeenCalled();
   });
 
-  it("returns 502 when OpenAI fails", async () => {
-    create.mockRejectedValue(new Error("model_not_found"));
+  it("returns 503 busy with Retry-After when OpenAI rate limits", async () => {
+    create.mockRejectedValue(
+      APIError.generate(
+        429,
+        { error: { code: "rate_limit_exceeded" } },
+        undefined,
+        new Headers({ "retry-after": "30" }),
+      ),
+    );
+    const res = await invoke(VALID);
+    expect(res.status).toBe(503);
+    expect(res.headers.get("Retry-After")).toBe("30");
+    expect(res.body.error).toMatch(/busy\. Try again in a minute/);
+  });
+
+  it("returns 503 unavailable without logging the upstream message", async () => {
+    const leaky = "Incorrect API key provided: sk-proj-****abcd";
+    create.mockRejectedValue(
+      APIError.generate(
+        401,
+        { error: { code: "invalid_api_key", message: leaky } },
+        undefined,
+        new Headers(),
+      ),
+    );
+    const res = await invoke(VALID);
+    expect(res.status).toBe(503);
+    expect(res.headers.get("Retry-After")).toBeNull();
+    expect(res.body.error).toBe("AI mnemonics are unavailable right now.");
+    expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain(
+      "sk-proj",
+    );
+    expect(console.error).toHaveBeenCalledWith(
+      "AI provider request failed",
+      expect.objectContaining({ status: 401, code: "invalid_api_key" }),
+    );
+  });
+
+  it("returns 502 when OpenAI fails unexpectedly", async () => {
+    create.mockRejectedValue(new Error("socket hang up"));
     const res = await invoke(VALID);
     expect(res.status).toBe(502);
+    expect(res.body.error).toMatch(/Please try again/);
   });
 
   it("returns 502 when OpenAI returns empty content", async () => {
@@ -155,7 +213,7 @@ describe("mnemonic function", () => {
 
     it("returns a canned mnemonic without a key or an OpenAI call", async () => {
       const res = await invoke(VALID);
-      expect(res).toEqual({
+      expect(res).toMatchObject({
         status: 200,
         body: { message: "[mock] Apple, Bring, Crane, Dozen." },
       });

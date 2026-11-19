@@ -5,9 +5,19 @@ import {
   type MnemonicSuccess,
 } from "../../../shared/api";
 
-const FALLBACK_MESSAGE = "Something went wrong generating the mnemonic";
+/**
+ * Used when the server didn't send its own message, e.g. a platform error
+ * page. The platform rate limiter answers 429 before our function runs.
+ */
+const FALLBACK_MESSAGE =
+  "Something went wrong generating the mnemonic. Please try again.";
+const RATE_LIMITED_MESSAGE = "Too many requests. Wait a minute and try again.";
 
-/** A failed mnemonic request. `message` is safe to show to users. */
+/** Shown for failures without a response (offline, DNS, CORS, …). */
+export const NETWORK_ERROR_MESSAGE =
+  "Couldn't reach the server. Check your connection and try again.";
+
+/** A failed mnemonic request. `message` is a complete, user-facing sentence. */
 export class MnemonicError extends Error {
   constructor(
     message: string,
@@ -47,7 +57,9 @@ export const fetchMnemonic = async (
     const message =
       typeof body?.error === "string" && body.error
         ? body.error
-        : FALLBACK_MESSAGE;
+        : response.status === 429
+          ? RATE_LIMITED_MESSAGE
+          : FALLBACK_MESSAGE;
     throw new MnemonicError(message, response.status);
   }
 
