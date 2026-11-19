@@ -1,6 +1,7 @@
-import type { HandlerContext, HandlerEvent } from "@netlify/functions";
 import type { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { MNEMONIC_ENDPOINT } from "../../../shared/api";
 
 const create =
   vi.fn<(body: ChatCompletionCreateParamsNonStreaming) => Promise<unknown>>();
@@ -13,7 +14,7 @@ vi.mock("openai", () => ({
   },
 }));
 
-const { handler } = await import("./index");
+const { default: handler, config } = await import("./index");
 
 const VALID = { passphrase: "apple bring crane dozen", mode: "standard" };
 
@@ -21,15 +22,16 @@ const invoke = async (
   body: unknown,
   { method = "POST", raw = false }: { method?: string; raw?: boolean } = {},
 ) => {
-  const event = {
-    httpMethod: method,
-    body: raw ? (body as string) : JSON.stringify(body),
-  } as HandlerEvent;
-  const response = await handler(event, {} as HandlerContext);
-  if (!response) throw new Error("handler returned no response");
+  const request = new Request("http://localhost/api/mnemonic", {
+    method,
+    body:
+      method === "GET" ? null : raw ? (body as string) : JSON.stringify(body),
+  });
+  const response = await handler(request);
   return {
-    status: response.statusCode,
-    body: JSON.parse(response.body ?? "{}") as Record<string, unknown>,
+    status: response.status,
+    headers: response.headers,
+    body: (await response.json()) as Record<string, unknown>,
   };
 };
 
@@ -49,9 +51,14 @@ afterEach(() => {
 });
 
 describe("mnemonic function", () => {
+  it("is served at the shared endpoint", () => {
+    // config must use literals (Netlify parses it statically), so guard drift
+    expect(config.path).toBe(MNEMONIC_ENDPOINT);
+  });
+
   it("returns the trimmed mnemonic on success", async () => {
     const res = await invoke(VALID);
-    expect(res).toEqual({
+    expect(res).toMatchObject({
       status: 200,
       body: { message: "An apple brings a crane a dozen." },
     });
@@ -155,7 +162,7 @@ describe("mnemonic function", () => {
 
     it("returns a canned mnemonic without a key or an OpenAI call", async () => {
       const res = await invoke(VALID);
-      expect(res).toEqual({
+      expect(res).toMatchObject({
         status: 200,
         body: { message: "[mock] Apple, Bring, Crane, Dozen." },
       });

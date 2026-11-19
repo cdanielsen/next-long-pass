@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import type { Handler, HandlerResponse } from "@netlify/functions";
+import type { Config } from "@netlify/functions";
 import type { MnemonicResponse } from "../../../shared/api";
 import { validateRequest } from "./validate";
 import { mockMnemonic } from "./mock";
@@ -17,26 +17,22 @@ const DEFAULT_MODEL = "gpt-6-luna";
 const MAX_COMPLETION_TOKENS = 120;
 
 const json = (
-  statusCode: number,
+  status: number,
   body: MnemonicResponse,
   headers: Record<string, string> = {},
-): HandlerResponse => ({
-  statusCode,
-  headers: { "Content-Type": "application/json", ...headers },
-  body: JSON.stringify(body),
-});
+): Response => Response.json(body, { status, headers });
 
 let client: OpenAI | undefined;
 const getClient = (apiKey: string) => (client ??= new OpenAI({ apiKey }));
 
-const handler: Handler = async (event) => {
-  if (event.httpMethod !== "POST") {
+export default async (req: Request): Promise<Response> => {
+  if (req.method !== "POST") {
     return json(405, { error: "Method not allowed" }, { Allow: "POST" });
   }
 
   let body: unknown;
   try {
-    body = JSON.parse(event.body ?? "");
+    body = await req.json();
   } catch {
     return json(400, { error: "Request body must be valid JSON" });
   }
@@ -78,4 +74,10 @@ const handler: Handler = async (event) => {
   }
 };
 
-export { handler };
+/**
+ * Netlify reads this statically at build time, so values must be literals:
+ * an imported constant (e.g. MNEMONIC_ENDPOINT) is silently ignored.
+ */
+export const config: Config = {
+  path: "/api/mnemonic",
+};
